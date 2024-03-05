@@ -63,7 +63,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>JobApplication__c.Web_link__c</field>
+        <field>JobApplication__c.URL__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
