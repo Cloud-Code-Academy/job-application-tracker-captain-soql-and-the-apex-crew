@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Salary__c</fullName>
-    <description>Listed yearly compensation for job</description>
+    <fullName>Url__c</fullName>
+    <description>Hyperlink to the job posting</description>
     <externalId>false</externalId>
-    <label>Salary</label>
-    <precision>18</precision>
+    <label>Url</label>
     <required>false</required>
-    <scale>2</scale>
     <trackTrending>false</trackTrending>
-    <type>Currency</type>
+    <type>Url</type>
 </CustomField>

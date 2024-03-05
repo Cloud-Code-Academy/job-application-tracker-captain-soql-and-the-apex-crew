@@ -4,8 +4,8 @@
     <description>Responsibilities, qualifications, benefits listed for the job</description>
     <externalId>false</externalId>
     <label>Description</label>
-    <length>32768</length>
+    <length>131072</length>
     <trackTrending>false</trackTrending>
     <type>LongTextArea</type>
-    <visibleLines>5</visibleLines>
+    <visibleLines>15</visibleLines>
 </CustomField>

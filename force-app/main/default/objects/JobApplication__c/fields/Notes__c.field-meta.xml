@@ -4,8 +4,8 @@
     <description>Additional information on job application</description>
     <externalId>false</externalId>
     <label>Notes</label>
-    <length>32768</length>
+    <length>131072</length>
     <trackTrending>false</trackTrending>
-    <type>Html</type>
-    <visibleLines>10</visibleLines>
+    <type>LongTextArea</type>
+    <visibleLines>15</visibleLines>
 </CustomField>
