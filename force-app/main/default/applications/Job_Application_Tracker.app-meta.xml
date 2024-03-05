@@ -25,6 +25,8 @@
     <tabs>standard-home</tabs>
     <tabs>standard-Account</tabs>
     <tabs>standard-Contact</tabs>
+    <tabs>JobApplication__c</tabs>
+    <tabs>JobPosting__c</tabs>
     <tabs>standard-Task</tabs>
     <tabs>standard-Event</tabs>
     <uiType>Lightning</uiType>
