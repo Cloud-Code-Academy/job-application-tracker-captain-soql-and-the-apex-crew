@@ -162,16 +162,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.URL__c</fieldItem>
-                <identifier>RecordURL_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.Office_Location__c</fieldItem>
                 <identifier>RecordOffice_Location_cField</identifier>
             </fieldInstance>

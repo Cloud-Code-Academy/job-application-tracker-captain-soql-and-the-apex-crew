@@ -65,11 +65,6 @@
         <field>JobApplication__c.Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>JobApplication__c.URL__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Job Application Tracker Permissions</label>
     <objectPermissions>
