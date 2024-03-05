@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>false</active>
+    <entityName>JobApplication__c</entityName>
+    <fieldName>Status__c</fieldName>
+    <masterLabel>Application Process</masterLabel>
+    <pathAssistantSteps>
+        <fieldNames>Application_Date__c</fieldNames>
+        <fieldNames>Account__c</fieldNames>
+        <fieldNames>Description__c</fieldNames>
+        <fieldNames>Salary__c</fieldNames>
+        <fieldNames>Location__c</fieldNames>
+        <info>&lt;p&gt;Now that this application has been saved, Take a look at the information below to decide if this is something you want to apply for.&lt;/p&gt;</info>
+        <picklistValueName>Saved</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>Application</recordTypeName>
+</PathAssistant>
