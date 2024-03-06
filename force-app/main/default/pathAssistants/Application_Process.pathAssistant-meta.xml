@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <entityName>JobApplication__c</entityName>
+    <fieldName>Status__c</fieldName>
+    <masterLabel>Application Process</masterLabel>
+    <pathAssistantSteps>
+        <fieldNames>Position__c</fieldNames>
+        <fieldNames>Follow_up_date__c</fieldNames>
+        <fieldNames>Name</fieldNames>
+        <info>&lt;p&gt;Now you&amp;#39;re ready to make decision to accept the job offer or not&lt;/p&gt;&lt;p&gt;What are the Pros and cons?&lt;/p&gt;&lt;p&gt;Are you really going to be happy here?&lt;/p&gt;&lt;p&gt;Do you need a job no matter what? Accept then.&lt;/p&gt;</info>
+        <picklistValueName>Accepted</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Follow_up_date__c</fieldNames>
+        <fieldNames>Notes__c</fieldNames>
+        <info>&lt;p&gt;Once applied make sure you set up a follow up date&lt;/p&gt;</info>
+        <picklistValueName>Applied</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Account__c</fieldNames>
+        <fieldNames>Description__c</fieldNames>
+        <info>&lt;p&gt;Make sure Your resume matches the job description&lt;/p&gt;</info>
+        <picklistValueName>Applying</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;p&gt;Able to start working&lt;/p&gt;</info>
+        <picklistValueName>Closed</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Contact__c</fieldNames>
+        <fieldNames>Position__c</fieldNames>
+        <fieldNames>Salary__c</fieldNames>
+        <fieldNames>Status__c</fieldNames>
+        <info>&lt;p&gt;Prepare for the interview&lt;/p&gt;&lt;p&gt;Know who you are going to talk to&lt;/p&gt;</info>
+        <picklistValueName>Interviewing</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Contact__c</fieldNames>
+        <fieldNames>Salary__c</fieldNames>
+        <fieldNames>Status__c</fieldNames>
+        <info>&lt;p&gt;Make sure to look at comps&lt;/p&gt;&lt;p&gt;Don&amp;#39;t settle for less&lt;/p&gt;</info>
+        <picklistValueName>Negotiating</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Application_Date__c</fieldNames>
+        <fieldNames>Account__c</fieldNames>
+        <fieldNames>Description__c</fieldNames>
+        <fieldNames>Salary__c</fieldNames>
+        <fieldNames>Location__c</fieldNames>
+        <info>&lt;p&gt;Now that this application has been saved, Take a look at the information below to decide if this is something you want to apply for.&lt;/p&gt;</info>
+        <picklistValueName>Saved</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>Application</recordTypeName>
+</PathAssistant>
