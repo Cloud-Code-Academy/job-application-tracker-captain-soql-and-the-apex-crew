@@ -7,6 +7,16 @@
     <description>Permissions for all associated Job Application tracker-related things.</description>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Event.InterviewFormatPick__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Event.InterviewTypePick__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>JobApplication__c.Account__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -63,6 +73,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>JobApplication__c.Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Task.InterviewFormatPick__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Task.InterviewTypePick__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
