@@ -94,6 +94,10 @@
         <object>JobPosting__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+    <recordTypeVisibilities>
+        <recordType>JobApplication__c.Application</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
     <tabSettings>
         <tab>JobApplication__c</tab>
         <visibility>Visible</visibility>
