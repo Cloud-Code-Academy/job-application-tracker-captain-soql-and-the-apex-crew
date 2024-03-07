@@ -165,7 +165,7 @@
         <label>Contact Association</label>
         <type>Text</type>
     </nameField>
-    <pluralLabel>ContactAssociations</pluralLabel>
+    <pluralLabel>Contact Associations</pluralLabel>
     <searchLayouts></searchLayouts>
     <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>
