@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Role__c</fullName>
+    <description>The contact&apos;s role for the job application.</description>
+    <externalId>false</externalId>
+    <label>Role</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Reference</fullName>
+                <default>false</default>
+                <label>Reference</label>
+            </value>
+            <value>
+                <fullName>Recruiter</fullName>
+                <default>false</default>
+                <label>Recruiter</label>
+            </value>
+            <value>
+                <fullName>Human Resources</fullName>
+                <default>false</default>
+                <label>Human Resources</label>
+            </value>
+            <value>
+                <fullName>Hiring Manager</fullName>
+                <default>false</default>
+                <label>Hiring Manager</label>
+            </value>
+            <value>
+                <fullName>Technical Lead</fullName>
+                <default>false</default>
+                <label>Technical Lead</label>
+            </value>
+            <value>
+                <fullName>Department Head</fullName>
+                <default>false</default>
+                <label>Department Head</label>
+            </value>
+            <value>
+                <fullName>Executive</fullName>
+                <default>false</default>
+                <label>Executive</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
