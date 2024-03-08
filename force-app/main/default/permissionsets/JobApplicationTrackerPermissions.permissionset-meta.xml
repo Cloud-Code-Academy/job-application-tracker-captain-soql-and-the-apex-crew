@@ -43,7 +43,7 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Event.WhoId</field>
-        <field>Contact_Association__c.Role__c</field>
+        <field>ContactAssociation__c.Role__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -163,7 +163,7 @@
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
-        <object>Contact_Association__c</object>
+        <object>ContactAssociation__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
