@@ -21,7 +21,7 @@ public with sharing class JobApplicationTriggerHandler {
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
                             tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
                         }
-                    }                    
+                    }
                 }
                 when 'Applying'{
                     FINAL List<String> APPLYING_SUBJECTS = new List<String>{
@@ -35,7 +35,7 @@ public with sharing class JobApplicationTriggerHandler {
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
                             tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
                         }
-                    }  
+                    }
                 }
                 when 'Applied'{
                     FINAL List<String> APPLIED_SUBJECTS = new List<String>{
@@ -48,7 +48,7 @@ public with sharing class JobApplicationTriggerHandler {
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
                             tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
                         }
-                    }  
+                    }
                 }
                 when 'Interviewing'{
                     FINAL List<String> INTERVIEWING_SUBJECTS = new List<String>{
@@ -62,7 +62,7 @@ public with sharing class JobApplicationTriggerHandler {
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
                             tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
                         }
-                    }  
+                    }
                 }
                 when 'Negotiating'{
                     FINAL List<String> NEGOTIATING_SUBJECTS = new List<String>{
@@ -74,7 +74,7 @@ public with sharing class JobApplicationTriggerHandler {
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
                             tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
                         }
-                    }  
+                    }
                 }
                 when 'Accepted'{
                     FINAL List<String> ACCEPTED_SUBJECTS = new List<String>{
@@ -86,7 +86,7 @@ public with sharing class JobApplicationTriggerHandler {
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
                             tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
                         }
-                    }  
+                    }
                 }
                 when 'Closed'{
                     FINAL List<String> CLOSED_SUBJECTS = new List<String>{
@@ -97,7 +97,7 @@ public with sharing class JobApplicationTriggerHandler {
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
                             tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
                         }
-                    }  
+                    }
                 }
             }
         }
