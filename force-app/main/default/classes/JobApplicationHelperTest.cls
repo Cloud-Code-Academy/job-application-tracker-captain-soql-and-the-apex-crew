@@ -14,12 +14,6 @@ private class JobApplicationHelperTest {
         newContact.LastName = 'Test LastName';
         insert newContact;
 
-        // Contact newContactFromCompany = new Contact();
-        // newContactFromCompany.FirstName = 'Test CompanyContact FirstName';
-        // newContactFromCompany.LastName = 'Test CompanyContact LastName';
-        // newContactFromCompany.AccountId = acc.Id;
-        // insert newContactFromCompany;
-
         JobApplication__c newJobApplication = new JobApplication__c();
         newJobApplication.Name = 'Test Application';
         newJobApplication.Account__c = acc.Id;
