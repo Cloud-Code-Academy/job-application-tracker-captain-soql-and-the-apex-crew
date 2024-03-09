@@ -1,4 +1,5 @@
 public with sharing class JobApplicationTriggerHandler {
+
     public static void createTaskBasedOnStatus(List<JobApplication__c> triggerDotNew) {
         Map<Id, List<String>> jobApplicationIdToTaskMap = createJobApplicationToTaskMap(triggerDotNew);
         List<Task> tasksToInsert = new List<Task>();
@@ -12,6 +13,7 @@ public with sharing class JobApplicationTriggerHandler {
         }
         insert as user tasksToInsert;
     }
+
     private static Map<Id, List<String>> createJobApplicationToTaskMap(List<JobApplication__c> triggerDotNew){
         Map<Id, List<String>> jobApplicationIdToTaskMap = new Map<Id, List<String>>();
         for(JobApplication__c jobApp: triggerDotNew){
@@ -22,6 +24,7 @@ public with sharing class JobApplicationTriggerHandler {
         }
         return jobApplicationIdToTaskMap;
     }
+
     private static Task setTaskToCreate(Id jobAppId, String subject){
         Task newTask = new Task(
             WhatId = jobAppId,
@@ -30,6 +33,7 @@ public with sharing class JobApplicationTriggerHandler {
         );
         return newTask;
     }
+    
     private static Map<String,List<String>> createSubjectMap(){
         Map<String,List<String>> statusToSubjectMap = new Map<String,List<String>>();
         statusToSubjectMap.put('Saved', new List<String>{
