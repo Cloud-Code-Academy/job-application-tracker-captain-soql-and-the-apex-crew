@@ -1,13 +1,12 @@
 public with sharing class JobApplicationHelper {
     public static void setPrimaryContact(Map<Id,JobApplication__c> newJobApplicationMap) {
         for (JobApplication__c jobApp : newJobApplicationMap.values()) {
-            // if contact is added, see if there is a matching primary contact
             if (jobApp.Contact__c != null){
                 continue;
             } else if (areRelatedContactsAvailable(jobApp)) {
                 jobApp.Contact__c = jobApp.JobApplications__r[0].Contact__c;
             } else if (isCompanyAvailable(jobApp) && areCompanyContactsAvailable(jobApp)) {
-                jobApp.Contact__c = getFirstCompanyContact(jobApp);
+                jobApp.Contact__c = getCompanyFirstContact(jobApp);
             }
         }
     }
@@ -20,11 +19,11 @@ public with sharing class JobApplicationHelper {
         return jobApp.Account__c != null;
     }
     private static Boolean areCompanyContactsAvailable(JobApplication__c jobApp) {
-        List<Contact> companyContacts = [SELECT Id, LastName, AccountId FROM Contact WHERE AccountId = :jobApp.Account__c];
+        List<Contact> companyContacts = [SELECT Id, LastName, AccountId FROM Contact WHERE AccountId = :jobApp.Account__c WITH SYSTEM_MODE];
         return companyContacts.size() > 0;
     }
-    private static Id getFirstCompanyContact(JobApplication__c jobApp) {
-        List<Contact> companyContacts = [SELECT Id, LastName, AccountId FROM Contact WHERE AccountId = :jobApp.Account__c];
+    private static Id getCompanyFirstContact(JobApplication__c jobApp) {
+        List<Contact> companyContacts = [SELECT Id, LastName, AccountId FROM Contact WHERE AccountId = :jobApp.Account__c WITH SYSTEM_MODE];
         return companyContacts[0].Id;
     }
 }
