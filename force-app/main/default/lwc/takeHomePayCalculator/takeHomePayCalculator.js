@@ -11,34 +11,30 @@ import { LightningElement } from 'lwc';
 const federalTaxRate = 0.25;
 const medicareRate = 0.02;
 const socialSecurityRate = 0.03;
-let monthlyTakeHomePay = 0;
+//let monthlyTakeHomePay = 0;
 //let salary = 200000;
 export default class TakeHomePayCalculator extends LightningElement {
     
+    salary = 0; // Default salary
 
-    salary = 100000; // Default salary
-
-    // Calculate the take home pay
+        // Calculate the take home pay
     calculateTakeHomePay() {
         let federalTax = this.salary * federalTaxRate;
         let medicare = this.salary * medicareRate;
         let socialSecurity = this.salary * socialSecurityRate;
-        console.log(federalTax);
-        console.log(medicare);
-        console.log(socialSecurity);
         let totalTax = federalTax + medicare + socialSecurity;
-        console.log(totalTax);
         let takeHomePay = this.salary - totalTax;
-        console.log(takeHomePay);
 
-        // Convert annual take home pay to monthly
-        this.monthlyTakeHomePay = takeHomePay / 12;
-        console.log(this.monthlyTakeHomePay);
-
-        return this.monthlyTakeHomePay;
+        this.yearlyTakeHomePay = takeHomePay.toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+            // convert to 6 month
+        this.sixMonthlyTakeHomePay = (takeHomePay / 2).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+            // Convert annual take home pay to monthly
+        this.monthlyTakeHomePay = (takeHomePay / 12).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+            // Convert Annual to Biweekly pay
+        this.biweeklyTakeHomePay = (takeHomePay / 26).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
     }
 
-    // Change handler for salary input
+        // Change handler for salary input
     handleSalaryChange(event) {
         this.salary = Number(event.target.value);
         const inputName = event.target.name;
