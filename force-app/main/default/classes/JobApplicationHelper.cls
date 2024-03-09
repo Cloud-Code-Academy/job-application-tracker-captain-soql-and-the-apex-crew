@@ -6,7 +6,7 @@ public with sharing class JobApplicationHelper {
                 continue;
             } else if (areRelatedContactsAvailable(jobApp)) {
                 jobApp.Contact__c = jobApp.JobApplications__r[0].Contact__c;
-            } else if (areCompanyContactsAvailable(jobApp)) {
+            } else if (isCompanyAvailable(jobApp) && areCompanyContactsAvailable(jobApp)) {
                 jobApp.Contact__c = getFirstCompanyContact(jobApp);
             }
         }
@@ -17,7 +17,6 @@ public with sharing class JobApplicationHelper {
     }
 
     private static Boolean isCompanyAvailable(JobApplication__c jobApp) {
-
         return jobApp.Account__c != null;
     }
     private static Boolean areCompanyContactsAvailable(JobApplication__c jobApp) {
