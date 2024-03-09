@@ -14,23 +14,19 @@ private class JobApplicationHelperTest {
         newContact.LastName = 'Test LastName';
         insert newContact;
 
-        Contact newContactFromCompany = new Contact();
-        newContactFromCompany.FirstName = 'Test CompanyContact FirstName';
-        newContactFromCompany.LastName = 'Test CompanyContact LastName';
-        newContactFromCompany.AccountId = acc.Id;
-        insert newContactFromCompany;
+        // Contact newContactFromCompany = new Contact();
+        // newContactFromCompany.FirstName = 'Test CompanyContact FirstName';
+        // newContactFromCompany.LastName = 'Test CompanyContact LastName';
+        // newContactFromCompany.AccountId = acc.Id;
+        // insert newContactFromCompany;
 
         JobApplication__c newJobApplication = new JobApplication__c();
         newJobApplication.Name = 'Test Application';
         newJobApplication.Account__c = acc.Id;
         newJobApplication.JobPostingRef__c = newJobPosting.Id;
         insert newJobApplication;
-
-        // ContactAssociation__c newContactAssociation = new ContactAssociation__c();
-        // newContactAssociation.Contact__c = newContact.Id;
-        // newContactAssociation.JobApplication__c = newJobApplication.Id;
-        // insert newContactAssociation;
     }
+
     @isTest 
     static void setPrimaryContactTest_shouldPopulateEmptyPrimaryContactFromRelatedContacts() {
         JobApplication__c newJobApplication = [
@@ -121,10 +117,17 @@ private class JobApplicationHelperTest {
                 FROM JobApplications__r) 
             FROM JobApplication__c
         ];
+
         Assert.isNull(newJobApplication.Contact__c, 'Expected empty Primary Contact on JobApplication to begin');
 
         Account companyTest = [SELECT Id FROM Account LIMIT 1];
         Assert.areEqual(companyTest.Id, newJobApplication.Account__c, 'Expected company to be available');
+
+        Contact newContactFromCompany = new Contact();
+        newContactFromCompany.FirstName = 'Test CompanyContact FirstName';
+        newContactFromCompany.LastName = 'Test CompanyContact LastName';
+        newContactFromCompany.AccountId = companyTest.Id;
+        insert newContactFromCompany;
 
         Contact companyContact = [SELECT Id FROM Contact WHERE AccountId = :companyTest.Id LIMIT 1];
         Assert.isNotNull(companyContact, 'Expected matching Contact available through company');
@@ -136,5 +139,29 @@ private class JobApplicationHelperTest {
         Test.stopTest();
 
         Assert.areEqual(companyContact.Id, newJobApplication.Contact__c, 'Expected to have Primary Contact assigned via company');
+    }
+
+    @IsTest 
+    private static void setPrimaryContactTest_shouldNotCrashWhenNoOptionsAvailable() {
+        JobApplication__c newJobApplication = [
+            SELECT 
+                Id, 
+                Account__c,
+                Contact__c,
+                (SELECT 
+                    Id, 
+                    Contact__r.LastName 
+                FROM JobApplications__r) 
+            FROM JobApplication__c
+        ];
+        Assert.isNull(newJobApplication.Contact__c, 'Expected empty Primary Contact on JobApplication to begin');
+
+        Test.startTest();
+        JobApplicationHelper.setPrimaryContact(new Map<Id, JobApplication__c>{ 
+            newJobApplication.id => newJobApplication
+        });
+        Test.stopTest();
+
+        Assert.isNull(newJobApplication.Contact__c, 'Expected empty Primary Contact on JobApplication to be maintained');
     }
 }
