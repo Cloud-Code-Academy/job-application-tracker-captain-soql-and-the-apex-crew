@@ -6,9 +6,27 @@
   @last modified by  : @Fritz
 -->
 <template>
-    <lightning-card title="Take Home Pay Calculator" icon-name="custom:custom14">
-        <div class="slds--var-m-around_medium">
-            <lightning-input label="Salary" value={salary} onchange={handleSalaryChange}></lightning-input>
+    <lightning-card title="Take Home Pay Calculator">
+        <div class="slds-var-p-around_medium">
+            <lightning-input 
+                type="number" 
+                name="salaryName" 
+                label="Salary" 
+                value={salary}
+                onchange={calculateTakeHomePay}
+            ></lightning-input>
+            <!-- 
+            <lightning-button 
+                variant="brand" 
+                label="Calculate" 
+                title="Calculate"  
+                onclick={calculateTakeHomePay}
+            ></lightning-button>
+             -->
+        </div>
+        <div slot="footer">
+            <h1 class="slds-text-heading_large slds-text-title_bold slds-text-title_caps">Calculation Results</h1>
+            <p class="slds-text-heading_medium">Monthly Take Home Pay: <span class="slds-text-color_destructive">{monthlyTakeHomePay}</span></p>
         </div>
     </lightning-card>
 </template>
