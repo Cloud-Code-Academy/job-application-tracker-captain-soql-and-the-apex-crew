@@ -6,7 +6,7 @@ public with sharing class JobApplicationTriggerHandler {
         for(JobApplication__c jobApp: triggerDotNew){
             for(String subject: statusToSubjectMap.get(jobApp.status__c)){
                 if(!jobApplicationIdToTaskMap.get(jobApp.Id).contains(subject)){
-                    tasksToInsert.add(assignTaskToCreate(jobApp.Id, subject));
+                    tasksToInsert.add(setTaskToCreate(jobApp.Id, subject));
                 }
             }
         }
@@ -22,7 +22,7 @@ public with sharing class JobApplicationTriggerHandler {
         }
         return jobApplicationIdToTaskMap;
     }
-    private static Task assignTaskToCreate(Id jobAppId, String subject){
+    private static Task setTaskToCreate(Id jobAppId, String subject){
         Task newTask = new Task(
             WhatId = jobAppId,
             Subject = subject,
