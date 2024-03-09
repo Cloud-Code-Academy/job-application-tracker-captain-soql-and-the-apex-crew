@@ -19,7 +19,7 @@ public with sharing class JobApplicationTriggerHandler {
                     };
                     for(String subject: SAVED_STATUS_SUBJECTS){
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
-                            tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
+                            tasksToInsert.add(assignTaskToCreate(jobApp.Id, subject));
                         }
                     }
                 }
@@ -33,7 +33,7 @@ public with sharing class JobApplicationTriggerHandler {
                     };
                     for(String subject: APPLYING_SUBJECTS){
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
-                            tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
+                            tasksToInsert.add(assignTaskToCreate(jobApp.Id, subject));
                         }
                     }
                 }
@@ -46,7 +46,7 @@ public with sharing class JobApplicationTriggerHandler {
                     };
                     for(String subject: APPLIED_SUBJECTS){
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
-                            tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
+                            tasksToInsert.add(assignTaskToCreate(jobApp.Id, subject));
                         }
                     }
                 }
@@ -60,7 +60,7 @@ public with sharing class JobApplicationTriggerHandler {
                     };
                     for(String subject: INTERVIEWING_SUBJECTS){
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
-                            tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
+                            tasksToInsert.add(assignTaskToCreate(jobApp.Id, subject));
                         }
                     }
                 }
@@ -72,7 +72,7 @@ public with sharing class JobApplicationTriggerHandler {
                     };
                     for(String subject: NEGOTIATING_SUBJECTS){
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
-                            tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
+                            tasksToInsert.add(assignTaskToCreate(jobApp.Id, subject));
                         }
                     }
                 }
@@ -84,7 +84,7 @@ public with sharing class JobApplicationTriggerHandler {
                     };
                     for(String subject: ACCEPTED_SUBJECTS){
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
-                            tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
+                            tasksToInsert.add(assignTaskToCreate(jobApp.Id, subject));
                         }
                     }
                 }
@@ -95,7 +95,7 @@ public with sharing class JobApplicationTriggerHandler {
                     };
                     for(String subject: CLOSED_SUBJECTS){
                         if(!jobApplicationToTaskMap.get(jobApp.Id).contains(subject)){
-                            tasksToInsert.add(createTaskToCreate(jobApp.Id, subject));
+                            tasksToInsert.add(assignTaskToCreate(jobApp.Id, subject));
                         }
                     }
                 }
@@ -103,7 +103,7 @@ public with sharing class JobApplicationTriggerHandler {
         }
         insert as user tasksToInsert;
     }
-    private static Task createTaskToCreate(Id jobAppId, String subject){
+    private static Task assignTaskToCreate(Id jobAppId, String subject){
         Task newTask = new Task(
             WhatId = jobAppId,
             Subject = subject,
