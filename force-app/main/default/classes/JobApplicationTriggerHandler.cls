@@ -1,6 +1,6 @@
 public with sharing class JobApplicationTriggerHandler {
-    public static void setPrimaryContact(Map<Id,JobApplication__c> newJobApplicationMap) {
-        for (JobApplication__c jobApp : newJobApplicationMap.values()) {
+    public static void setPrimaryContact(Map<Id,JobApplication__c> jobApplicationDotNewMap) {
+        for (JobApplication__c jobApp : jobApplicationDotNewMap.values()) {
             if (jobApp.Contact__c != null){
                 continue;
             } else if (areRelatedContactsAvailable(jobApp)) {
