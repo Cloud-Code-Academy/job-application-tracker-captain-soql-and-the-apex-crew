@@ -1,5 +1,5 @@
 @isTest
-private class JobApplicationHelperTest {
+private class JobApplicationTriggerHandler_Test {
     @TestSetup
     static void makeData(){
         Account acc = new Account(Name = 'Account Test 1');
@@ -58,7 +58,7 @@ private class JobApplicationHelperTest {
         // end
 
         Test.startTest();
-        JobApplicationHelper.setPrimaryContact(new Map<Id, JobApplication__c>{ 
+        JobApplicationTriggerHandler.setPrimaryContact(new Map<Id, JobApplication__c>{ 
             newJobApplication.id => newJobApplication
         });
         Test.stopTest();
@@ -89,7 +89,7 @@ private class JobApplicationHelperTest {
         Contact singleContact = [SELECT Id FROM Contact WHERE Id != :newLocalContact.Id LIMIT 1];
 
         Test.startTest();
-        JobApplicationHelper.setPrimaryContact(new Map<Id, JobApplication__c>{ 
+        JobApplicationTriggerHandler.setPrimaryContact(new Map<Id, JobApplication__c>{ 
             newJobApplication.id => newJobApplication
         });
         Test.stopTest();
@@ -127,7 +127,7 @@ private class JobApplicationHelperTest {
         Assert.isNotNull(companyContact, 'Expected matching Contact available through company');
 
         Test.startTest();
-        JobApplicationHelper.setPrimaryContact(new Map<Id, JobApplication__c>{ 
+        JobApplicationTriggerHandler.setPrimaryContact(new Map<Id, JobApplication__c>{ 
             newJobApplication.id => newJobApplication
         });
         Test.stopTest();
@@ -151,7 +151,7 @@ private class JobApplicationHelperTest {
         Assert.isNull(newJobApplication.Contact__c, 'Expected empty Primary Contact on JobApplication to begin');
 
         Test.startTest();
-        JobApplicationHelper.setPrimaryContact(new Map<Id, JobApplication__c>{ 
+        JobApplicationTriggerHandler.setPrimaryContact(new Map<Id, JobApplication__c>{ 
             newJobApplication.id => newJobApplication
         });
         Test.stopTest();
