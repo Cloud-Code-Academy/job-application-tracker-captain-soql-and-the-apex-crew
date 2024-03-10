@@ -8,18 +8,35 @@
 import { LightningElement } from 'lwc';
 
 // Tax rates
-const federalTaxRate = 0.25;
-const medicareRate = 0.02;
-const socialSecurityRate = 0.03;
-//let monthlyTakeHomePay = 0;
-//let salary = 200000;
+const medicareRate = 0.0145;
+const socialSecurityRate = 0.062;
 export default class TakeHomePayCalculator extends LightningElement {
     
     salary = 0; // Default salary
+    currentFederalTaxRate = 0; //default tax rate
+
+    // Tax rates
+    medicareRate = medicareRate;
+    socialSecurityRate = socialSecurityRate;
 
         // Calculate the take home pay
     calculateTakeHomePay() {
-        let federalTax = this.salary * federalTaxRate;
+            // Determine the federal tax rate based on the salary
+            if (this.salary > 243725) {
+                this.currentFederalTaxRate = 0.35;
+            } else if (this.salary > 191950) {
+                this.currentFederalTaxRate = 0.32;
+            } else if (this.salary > 100525) {
+                this.currentFederalTaxRate = 0.24;
+            } else if (this.salary > 47150) {
+                this.currentFederalTaxRate = 0.22;
+            } else if (this.salary > 11600) {
+                this.currentFederalTaxRate = 0.12;
+            } else {
+                this.currentFederalTaxRate = 0; // No tax for incomes under $11,600
+            }
+            
+        let federalTax = this.salary * this.currentFederalTaxRate;
         let medicare = this.salary * medicareRate;
         let socialSecurity = this.salary * socialSecurityRate;
         let totalTax = federalTax + medicare + socialSecurity;
@@ -41,6 +58,5 @@ export default class TakeHomePayCalculator extends LightningElement {
         if(inputName == 'salaryName') {
             this.calculateTakeHomePay();
         }
-        console.log(this.salary);
     }
 }
