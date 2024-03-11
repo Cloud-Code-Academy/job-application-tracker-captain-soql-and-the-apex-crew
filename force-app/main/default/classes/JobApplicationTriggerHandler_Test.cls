@@ -47,7 +47,7 @@ public with sharing class JobApplicationTriggerHandler_Test {
         ];
 
         Assert.isNull(newJobApplication.Contact__c, 'Expected empty Primary Contact on JobApplication');
-        Contact singleContact = [SELECT Id FROM Contact WHERE LastName = 'Test LastName' LIMIT 1];
+        Contact singleContact = [SELECT Id FROM Contact WHERE LastName = 'Watney' LIMIT 1];
 
         ContactAssociation__c newContactAssociation = new ContactAssociation__c();
         newContactAssociation.Contact__c = singleContact.Id;
@@ -75,7 +75,6 @@ public with sharing class JobApplicationTriggerHandler_Test {
         Assert.isNotNull(newJobApplication.Contact__c, 'Expected a primary contact to be updated');
         Assert.areEqual(singleContact.Id, newJobApplication.Contact__c, 'Expected assignment to only contact in org');
     }
-
     @isTest 
     static void setPrimaryContactTest_shouldPassWhenPrimaryContactPopulated() {
         JobApplication__c newJobApplication = [
@@ -106,7 +105,6 @@ public with sharing class JobApplicationTriggerHandler_Test {
         Assert.isNotNull(newJobApplication.Contact__c, 'Expected a primary contact to be updated');
         Assert.areNotEqual(singleContact.Id, newJobApplication.Contact__c, 'Expected assignment to maintain primary contact and not overwrite');
     }
-    
     @IsTest
     private static void setPrimaryContactTest_shouldPopulateEmptyPrimaryContactFromContactFromCompany() {
         JobApplication__c newJobApplication = [
@@ -143,7 +141,6 @@ public with sharing class JobApplicationTriggerHandler_Test {
 
         Assert.areEqual(companyContact.Id, newJobApplication.Contact__c, 'Expected to have Primary Contact assigned via company');
     }
-
     @IsTest 
     private static void setPrimaryContactTest_shouldNotCrashWhenNoOptionsAvailable() {
         JobApplication__c newJobApplication = [
@@ -166,6 +163,43 @@ public with sharing class JobApplicationTriggerHandler_Test {
         Test.stopTest();
 
         Assert.isNull(newJobApplication.Contact__c, 'Expected empty Primary Contact on JobApplication to be maintained');
+    }
+    @IsTest
+    private static void JobApplicationTriggerBeforeInsertTest_ShouldUpdateBeforeInsert() {
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        JobPosting__c jobPostings = [SELECT Id FROM JobPosting__c LIMIT 1];
+        Contact newCompanyContact = new Contact(LastName = 'Company Associated', AccountId = acc.Id);
+        Contact newNonAffiliatedContact = new Contact(LastName = 'NOT Company Associated');
+        List<JobApplication__c> newJobApplicationList = new List<JobApplication__c>();
+        List<ContactAssociation__c> newContactAssociationsList = new List<ContactAssociation__c>();
+        for (Integer i = 0; i < 400; i++) {
+            JobApplication__c newJobApp = new JobApplication__c();
+            newJobApp.Name = 'Test Application ' + i;
+            newJobApp.Account__c = acc.Id;
+            newJobApp.JobPostingRef__c = jobPostings.Id;
+
+            Integer distributor = Math.mod(i, 2);
+            switch on distributor {
+                when 1 {
+                    // job app with no contacts
+                    jobApplicationList.add(newJobApp);
+                }
+                when else {
+                    ContactAssociation__c newContactAssociation = new ContactAssociation__c();
+                    newContactAssociation.Contact__c = newNonAffiliatedContact.Id;
+                    newContactAssociation.JobApplication__c = newJobApp.Id;
+                    newContactAssociationsList.add(newContactAssociation);
+                    jobApplicationList.add(newJobApp);
+                }
+            }
+            insert jobApplicationList;
+            insert newContactAssociationsList;
+
+        }
+    }
+    @IsTest
+    private static void JobApplicationTriggerBeforeInsertTest_ShouldUpdateBeforeUpdate() {
+
     }
     @TestSetup
     static void makeData(){
