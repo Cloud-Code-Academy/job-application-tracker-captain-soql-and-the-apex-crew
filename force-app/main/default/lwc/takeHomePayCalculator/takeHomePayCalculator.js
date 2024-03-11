@@ -20,21 +20,23 @@ export default class TakeHomePayCalculator extends LightningElement {
     socialSecurityRate = socialSecurityRate;
 
         // Calculate the take home pay
-    calculateTakeHomePay() {
-            // Determine the federal tax rate based on the salary
-            if (this.salary > 243725) {
-                this.currentFederalTaxRate = 0.35;
-            } else if (this.salary > 191950) {
-                this.currentFederalTaxRate = 0.32;
-            } else if (this.salary > 100525) {
-                this.currentFederalTaxRate = 0.24;
-            } else if (this.salary > 47150) {
-                this.currentFederalTaxRate = 0.22;
-            } else if (this.salary > 11600) {
-                this.currentFederalTaxRate = 0.12;
-            } else {
-                this.currentFederalTaxRate = 0; // No tax for incomes under $11,600
-            }
+    calculateTakeHomePay(event) {
+            // Determine the federal tax rate based on the salary  
+        const inputValue = this.template.querySelector('.inputClass').value;
+        this.salary = Number(inputValue);
+        if (this.salary > 243725) {
+            this.currentFederalTaxRate = 0.35;
+        } else if (this.salary > 191950) {
+            this.currentFederalTaxRate = 0.32;
+        } else if (this.salary > 100525) {
+            this.currentFederalTaxRate = 0.24;
+        } else if (this.salary > 47150) {
+            this.currentFederalTaxRate = 0.22;
+        } else if (this.salary > 11600) {
+            this.currentFederalTaxRate = 0.12;
+        } else {
+            this.currentFederalTaxRate = 0; // No tax for incomes under $11,600
+        }
             
         let federalTax = this.salary * this.currentFederalTaxRate;
         let medicare = this.salary * medicareRate;
@@ -52,11 +54,11 @@ export default class TakeHomePayCalculator extends LightningElement {
     }
 
         // Change handler for salary input
-    handleSalaryChange(event) {
-        this.salary = Number(event.target.value);
-        const inputName = event.target.name;
-        if(inputName == 'salaryName') {
-            this.calculateTakeHomePay();
-        }
-    }
+    // handleSalaryChange(event) {
+    //     this.salary = Number(event.target.value);
+    //     const inputName = event.target.name;
+    //     if(inputName == 'salaryName') {
+    //         this.calculateTakeHomePay();
+    //     }
+    // }
 }
