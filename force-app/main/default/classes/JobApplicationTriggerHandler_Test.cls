@@ -32,6 +32,41 @@ public with sharing class JobApplicationTriggerHandler_Test {
         update jobApp;
         Assert.areEqual(25,  [SELECT Id FROM Task].size(), 'Expected 25 total task to be created.');
     }
+
+    @isTest 
+    static void setPrimaryContactTest_shouldPassWhenPrimaryContactPopulated() {
+        JobApplication__c newJobApplication = [
+            SELECT 
+                Id, 
+                Contact__c, 
+                (SELECT 
+                    Id, 
+                    Contact__r.LastName 
+                FROM JobApplications__r) 
+            FROM JobApplication__c
+        ];
+        Assert.isNull(newJobApplication.Contact__c, 'Contact should be null to start');
+
+        Contact newLocalContact = new Contact();
+        newLocalContact.LastName = 'test local contact';
+        insert newLocalContact;
+
+        newJobApplication.Contact__c = newLocalContact.Id;
+        update newJobApplication;
+
+        Assert.isNotNull(newJobApplication.Contact__c, 'Expected Primary Contact on JobApplication');
+        Contact singleContact = [SELECT Id FROM Contact WHERE Id != :newLocalContact.Id LIMIT 1];
+
+        Test.startTest();
+        JobApplicationTriggerHandler.setPrimaryContact(new Map<Id, JobApplication__c>{ 
+            newJobApplication.id => newJobApplication
+        });
+        Test.stopTest();
+
+        Assert.isNotNull(newJobApplication.Contact__c, 'Expected a primary contact to be updated');
+        Assert.areNotEqual(singleContact.Id, newJobApplication.Contact__c, 'Expected assignment to maintain primary contact and not overwrite');
+    }
+
     @isTest 
     static void setPrimaryContactTest_shouldPopulateEmptyPrimaryContactFromRelatedContacts() {
         JobApplication__c newJobApplication = [
@@ -74,36 +109,6 @@ public with sharing class JobApplicationTriggerHandler_Test {
 
         Assert.isNotNull(newJobApplication.Contact__c, 'Expected a primary contact to be updated');
         Assert.areEqual(singleContact.Id, newJobApplication.Contact__c, 'Expected assignment to only contact in org');
-    }
-    @isTest 
-    static void setPrimaryContactTest_shouldPassWhenPrimaryContactPopulated() {
-        JobApplication__c newJobApplication = [
-            SELECT 
-                Id, 
-                Contact__c, 
-                (SELECT 
-                    Id, 
-                    Contact__r.LastName 
-                FROM JobApplications__r) 
-            FROM JobApplication__c
-        ];
-        Contact newLocalContact = new Contact();
-        newLocalContact.LastName = 'test contact 2';
-        insert newLocalContact;
-        newJobApplication.Contact__c = newLocalContact.Id;
-        update newJobApplication;
-
-        Assert.isNotNull(newJobApplication.Contact__c, 'Expected Primary Contact on JobApplication');
-        Contact singleContact = [SELECT Id FROM Contact WHERE Id != :newLocalContact.Id LIMIT 1];
-
-        Test.startTest();
-        JobApplicationTriggerHandler.setPrimaryContact(new Map<Id, JobApplication__c>{ 
-            newJobApplication.id => newJobApplication
-        });
-        Test.stopTest();
-
-        Assert.isNotNull(newJobApplication.Contact__c, 'Expected a primary contact to be updated');
-        Assert.areNotEqual(singleContact.Id, newJobApplication.Contact__c, 'Expected assignment to maintain primary contact and not overwrite');
     }
     @IsTest
     private static void setPrimaryContactTest_shouldPopulateEmptyPrimaryContactFromContactFromCompany() {
@@ -164,43 +169,52 @@ public with sharing class JobApplicationTriggerHandler_Test {
 
         Assert.isNull(newJobApplication.Contact__c, 'Expected empty Primary Contact on JobApplication to be maintained');
     }
+
+    // test class that inserts 400 JobApplications to test governor limits, should not fail.
     @IsTest
-    private static void JobApplicationTriggerBeforeInsertTest_ShouldUpdateBeforeInsert() {
-        Account acc = [SELECT Id FROM Account LIMIT 1];
-        JobPosting__c jobPostings = [SELECT Id FROM JobPosting__c LIMIT 1];
-        Contact newCompanyContact = new Contact(LastName = 'Company Associated', AccountId = acc.Id);
-        Contact newNonAffiliatedContact = new Contact(LastName = 'NOT Company Associated');
-        List<JobApplication__c> newJobApplicationList = new List<JobApplication__c>();
-        List<ContactAssociation__c> newContactAssociationsList = new List<ContactAssociation__c>();
-        for (Integer i = 0; i < 400; i++) {
-            JobApplication__c newJobApp = new JobApplication__c();
-            newJobApp.Name = 'Test Application ' + i;
-            newJobApp.Account__c = acc.Id;
-            newJobApp.JobPostingRef__c = jobPostings.Id;
+    private static void jobApplicationsBulkTest() {
+        Integer numberToGenerate = 400;
+        List<JobApplication__c> bulkJobApplicationList = new List<JobApplication__c>();
+        JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
 
-            Integer distributor = Math.mod(i, 2);
-            switch on distributor {
-                when 1 {
-                    // job app with no contacts
-                    jobApplicationList.add(newJobApp);
-                }
-                when else {
-                    ContactAssociation__c newContactAssociation = new ContactAssociation__c();
-                    newContactAssociation.Contact__c = newNonAffiliatedContact.Id;
-                    newContactAssociation.JobApplication__c = newJobApp.Id;
-                    newContactAssociationsList.add(newContactAssociation);
-                    jobApplicationList.add(newJobApp);
-                }
-            }
-            insert jobApplicationList;
-            insert newContactAssociationsList;
 
+        for (Integer i = 0; i < numberToGenerate; i++) {
+            JobApplication__c newJobApplication = new JobApplication__c();
+            newJobApplication.JobPostingRef__c = jobPost.Id;
+            bulkJobApplicationList.add(newJobApplication);
         }
-    }
-    @IsTest
-    private static void JobApplicationTriggerBeforeInsertTest_ShouldUpdateBeforeUpdate() {
+
+        Test.startTest();
+        insert bulkJobApplicationList;
+        Test.stopTest();
+
+        for (JobApplication__c jobApp : bulkJobApplicationList) {
+            Assert.isNull(jobApp.Contact__c, 'Expected empty contacts for bulk test');
+        }
+
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        Contact companyContact = [
+            SELECT Id, LastName
+            FROM Contact
+            WHERE LastName = 'Watney'
+            LIMIT 1
+        ];
+        companyContact.AccountId = acc.Id;
+        update companyContact;
+        for (JobApplication__c jobApp : bulkJobApplicationList) {
+            jobApp.Account__c = acc.Id;
+        }
+
+        // Test.startTest();
+        update bulkJobApplicationList;
+        // Test.stopTest();
+
+        for (JobApplication__c jobApp : bulkJobApplicationList) {
+            Assert.isNotNull(jobApp.Contact__c, 'Expected contacts to be populated after update');
+        }
 
     }
+
     @TestSetup
     static void makeData(){
         Account acc = new Account(
