@@ -47,8 +47,24 @@ public with sharing class JobApplicationTriggerHandler_Test {
         Assert.areEqual(contact.Id, jobApp.Contact__c, 'Expected the Primary Contact to be unmodified');
     }
     @isTest
-    static void testInsertWithoutPrimaryContact_shouldSetPrimaryContactToCompanyContact() {
+    static void testAssignWithoutPrimaryContact_shouldSetPrimaryContactToCompanyContact() {
+        Account company = [SELECT Id FROM Account LIMIT 1];
+        Contact contact = [SELECT Id, AccountId FROM Contact LIMIT 1];
+        contact.AccountId = company.Id;
+        update contact;
+        JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
+        JobApplication__c jobApp = new JobApplication__c();
+        jobApp.JobPostingRef__c = jobPost.Id;
+        jobApp.Account__c = company.Id;
 
+
+        Test.startTest();
+        insert jobApp;
+        Test.stopTest();
+
+        JobApplication__c result = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id = :jobApp.Id];
+
+        Assert.areEqual(contact.Id, result.Contact__c, 'Expected the Primary Contact to be updated through Company relationship');
     }
     @TestSetup
     static void makeData(){

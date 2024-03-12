@@ -14,12 +14,23 @@ public with sharing class JobApplicationTriggerHandler {
         insert as user tasksToInsert;
     }
 
-    public static void updatePrimaryContactOnInsert(List<JobApplication__c> triggerDotNew) {
-        List<JobApplication__c> jobApplicationsToInsert = new List<JobApplication__c>();
+    public static void assignPrimaryContactOnInsert(List<JobApplication__c> triggerDotNew) {
+        List<Id> accountIds = new List<Id>();
+        for(JobApplication__c jobApp : triggerDotNew) {
+            accountIds.add(jobApp.Account__c);
+        }
+
+        List<Contact> testContacts = [SELECT Id, AccountId FROM Contact];
+        Map<Id, Id> accountIdToContactIdMap = new Map<Id, Id>();
+        for(Contact companyContact : [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds]) {
+            accountIdToContactIdMap.put(companyContact.AccountId, companyContact.Id);
+        }
 
         for (JobApplication__c jobApp : triggerDotNew) {
             if (jobApp.Contact__c != null) {
                 continue;
+            } else if (jobApp.Account__c != null && accountIdToContactIdMap.get(jobApp.Account__c) != null) {
+                jobApp.Contact__c = accountIdToContactIdMap.get(jobApp.Account__c);
             }
         }
     }
