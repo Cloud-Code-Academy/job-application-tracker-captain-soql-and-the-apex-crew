@@ -28,7 +28,24 @@ public with sharing class JobApplicationTriggerHandler {
     }
 
     public static void assignPrimaryContactOnUpdate(List<JobApplication__c> triggerDotNew) {
-        
+        for (JobApplication__c jobApp : triggerDotNew) {
+            if (jobApp.Contact__c != null) {
+                continue;
+            } else if (hasRelatedContacts(jobApp)) {
+                jobApp.Contact__c = getFirstRelatedContact(jobApp);
+            }
+        }
+    }
+
+    // need to bulkify
+    private static Boolean hasRelatedContacts (JobApplication__c jobApplication) {
+        ContactAssociation__c contactAssociation = [SELECT Id, Contact__c FROM ContactAssociation__c WHERE JobApplication__c = :jobApplication.Id LIMIT 1];
+        return contactAssociation != null;
+    }
+
+    // need to bulkify
+    private static Id getFirstRelatedContact (JobApplication__c jobApplication) {
+        return [SELECT Id, Contact__c FROM ContactAssociation__c WHERE JobApplication__c = :jobApplication.Id LIMIT 1].Contact__c;
     }
 
     private static Map<Id, List<String>> createJobApplicationToTaskMap(List<JobApplication__c> triggerDotNew){
