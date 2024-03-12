@@ -1,4 +1,4 @@
-trigger JobApplicationTrigger on JobApplication__c (before insert, after insert, before, after update) {
+trigger JobApplicationTrigger on JobApplication__c (before insert, after insert, before update, after update) {
     switch on trigger.operationType {
         when BEFORE_INSERT{
             JobApplicationTriggerHandler.assignPrimaryContactOnInsert(trigger.new);
