@@ -28,24 +28,31 @@ public with sharing class JobApplicationTriggerHandler {
     }
 
     public static void assignPrimaryContactOnUpdate(List<JobApplication__c> triggerDotNew) {
+        List<Id> missingPrimaryContactJobApplicationIds = new List<Id>();
+        for(JobApplication__c jobApp : triggerDotNew) {
+            if (jobApp.Contact__c == null) {
+                missingPrimaryContactJobApplicationIds.add(jobApp.Id);
+            }
+        }
+        List<ContactAssociation__c> filteredContactAssociationList = [SELECT Id, Contact__c, JobApplication__c FROM ContactAssociation__c WHERE JobApplication__c IN :missingPrimaryContactJobApplicationIds];
+
+        Map<Id, Id> jobApplicationIdToContactIdMap = new Map<Id, Id>();
+        for (ContactAssociation__c contactAssociation : filteredContactAssociationList) {
+            jobApplicationIdToContactIdMap.put(contactAssociation.JobApplication__c, contactAssociation.Contact__c);
+        }
+
+        List<Id> accountIds = pluckAccountIds(triggerDotNew);
+        Map<Id, Id> accountIdToContactIdMap = getAccountIdToContactIdMap(accountIds);
+
         for (JobApplication__c jobApp : triggerDotNew) {
             if (jobApp.Contact__c != null) {
                 continue;
-            } else if (hasRelatedContacts(jobApp)) {
-                jobApp.Contact__c = getFirstRelatedContact(jobApp);
+            } else if (jobApplicationIdToContactIdMap.containsKey(jobApp.Id)) {
+                jobApp.Contact__c = jobApplicationIdToContactIdMap.get(jobApp.Id);
+            } else if (hasCompanyRef(jobApp) && hasContactLinkedToCompanyRef(jobApp.Account__c, accountIdToContactIdMap)) {
+                jobApp.Contact__c = accountIdToContactIdMap.get(jobApp.Account__c);
             }
         }
-    }
-
-    // need to bulkify
-    private static Boolean hasRelatedContacts (JobApplication__c jobApplication) {
-        ContactAssociation__c contactAssociation = [SELECT Id, Contact__c FROM ContactAssociation__c WHERE JobApplication__c = :jobApplication.Id LIMIT 1];
-        return contactAssociation != null;
-    }
-
-    // need to bulkify
-    private static Id getFirstRelatedContact (JobApplication__c jobApplication) {
-        return [SELECT Id, Contact__c FROM ContactAssociation__c WHERE JobApplication__c = :jobApplication.Id LIMIT 1].Contact__c;
     }
 
     private static Map<Id, List<String>> createJobApplicationToTaskMap(List<JobApplication__c> triggerDotNew){
