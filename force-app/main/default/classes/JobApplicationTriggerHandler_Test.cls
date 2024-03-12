@@ -72,7 +72,6 @@ public with sharing class JobApplicationTriggerHandler_Test {
         JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
         JobApplication__c jobApp = new JobApplication__c();
         jobApp.JobPostingRef__c = jobPost.Id;
-        // jobApp.Account__c = company.Id;
         insert jobApp;
 
         JobApplication__c preUpdateJobApp = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id = :jobApp.Id];
