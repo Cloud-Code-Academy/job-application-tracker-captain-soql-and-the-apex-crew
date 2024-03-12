@@ -27,6 +27,10 @@ public with sharing class JobApplicationTriggerHandler {
         }
     }
 
+    public static void assignPrimaryContactOnUpdate(List<JobApplication__c> triggerDotNew) {
+        
+    }
+
     private static Map<Id, List<String>> createJobApplicationToTaskMap(List<JobApplication__c> triggerDotNew){
         Map<Id, List<String>> jobApplicationIdToTaskMap = new Map<Id, List<String>>();
         for(JobApplication__c jobApp: triggerDotNew){
