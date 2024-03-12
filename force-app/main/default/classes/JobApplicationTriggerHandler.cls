@@ -15,21 +15,13 @@ public with sharing class JobApplicationTriggerHandler {
     }
 
     public static void assignPrimaryContactOnInsert(List<JobApplication__c> triggerDotNew) {
-        List<Id> accountIds = new List<Id>();
-        for(JobApplication__c jobApp : triggerDotNew) {
-            accountIds.add(jobApp.Account__c);
-        }
-
-        List<Contact> testContacts = [SELECT Id, AccountId FROM Contact];
-        Map<Id, Id> accountIdToContactIdMap = new Map<Id, Id>();
-        for(Contact companyContact : [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds]) {
-            accountIdToContactIdMap.put(companyContact.AccountId, companyContact.Id);
-        }
+        List<Id> accountIds = pluckAccountIds(triggerDotNew);
+        Map<Id, Id> accountIdToContactIdMap = getAccountIdToContactIdMap(accountIds);
 
         for (JobApplication__c jobApp : triggerDotNew) {
             if (jobApp.Contact__c != null) {
                 continue;
-            } else if (jobApp.Account__c != null && accountIdToContactIdMap.get(jobApp.Account__c) != null) {
+            } else if (hasCompanyRef(jobApp) && hasContactLinkedToCompanyRef(jobApp.Account__c, accountIdToContactIdMap)) {
                 jobApp.Contact__c = accountIdToContactIdMap.get(jobApp.Account__c);
             }
         }
@@ -97,5 +89,31 @@ public with sharing class JobApplicationTriggerHandler {
             'Review your notes and reflect on areas of improvement'
         });
         return statusToSubjectMap;
+    }
+
+    private static List<Id> pluckAccountIds(List<JobApplication__c> JobApplications) {
+        List<Id> accountIds = new List<Id>();
+        for(JobApplication__c jobApp : JobApplications) {
+            if (jobApp.Account__c != null) {
+                accountIds.add(jobApp.Account__c);
+            }
+        }
+        return accountIds;
+    }
+
+    private static Map<Id, Id> getAccountIdToContactIdMap(List<Id> accountIds) {
+        Map<Id, Id> accountIdToContactIdMap = new Map<Id, Id>();
+        for(Contact companyContact : [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds]) {
+            accountIdToContactIdMap.put(companyContact.AccountId, companyContact.Id);
+        }
+        return accountIdToContactIdMap;
+    }
+
+    private static Boolean hasCompanyRef(JobApplication__c jobApp) {
+        return jobApp.Account__c != null;
+    }
+
+    private static Boolean hasContactLinkedToCompanyRef(Id companyIdFromJobApp, Map<Id, Id> accountIdToContactIdMap) {
+        return accountIdToContactIdMap.get(companyIdFromJobApp) != null;
     }
 }
