@@ -47,7 +47,7 @@ public with sharing class JobApplicationTriggerHandler_Test {
         Assert.areEqual(contact.Id, jobApp.Contact__c, 'Expected the Primary Contact to be unmodified');
     }
     @isTest
-    static void testAssignWithoutPrimaryContact_shouldSetPrimaryContactToCompanyContact() {
+    static void testAssignWithoutPrimaryContactOnInsert_shouldSetPrimaryContactToCompanyContact() {
         Account company = [SELECT Id FROM Account LIMIT 1];
         Contact contact = [SELECT Id, AccountId FROM Contact LIMIT 1];
         contact.AccountId = company.Id;
@@ -111,6 +111,27 @@ public with sharing class JobApplicationTriggerHandler_Test {
 
         JobApplication__c postUpdateJobApp = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id = :jobApp.Id];
         Assert.areEqual(contact.Id, postUpdateJobApp.Contact__c, 'Expected primary contact to populate from related contact');
+    }
+    @IsTest
+    private static void testAssignmentWithPrimaryContactOnUpdate_shouldProceedWithNoChanges() {
+        // when
+        Contact contact = [SELECT Id FROM Contact LIMIT 1];
+        JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
+        JobApplication__c jobApp = new JobApplication__c();
+        jobApp.JobPostingRef__c = jobPost.Id;
+        jobApp.Contact__c = contact.Id;
+        insert jobApp;
+
+        JobApplication__c beforeUpdateJobApp = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id = :jobApp.Id];
+        
+        Test.startTest();
+        update jobApp;
+        Test.stopTest();
+        
+        JobApplication__c afterUpdateJobApp = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id = :jobApp.Id];
+
+        Assert.areEqual(contact.Id, jobApp.Contact__c, 'Expected the Primary Contact match contact');
+        Assert.areEqual(beforeUpdateJobApp.Contact__c, afterUpdateJobApp.Contact__c, 'Expected the Primary Contact to be unmodified');
     }
     @TestSetup
     static void makeData(){
