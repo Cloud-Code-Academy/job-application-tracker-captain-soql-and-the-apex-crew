@@ -14,6 +14,16 @@ public with sharing class JobApplicationTriggerHandler {
         insert as user tasksToInsert;
     }
 
+    public static void updatePrimaryContactOnInsert(List<JobApplication__c> triggerDotNew) {
+        List<JobApplication__c> jobApplicationsToInsert = new List<JobApplication__c>();
+
+        for (JobApplication__c jobApp : triggerDotNew) {
+            if (jobApp.Contact__c != null) {
+                continue;
+            }
+        }
+    }
+
     private static Map<Id, List<String>> createJobApplicationToTaskMap(List<JobApplication__c> triggerDotNew){
         Map<Id, List<String>> jobApplicationIdToTaskMap = new Map<Id, List<String>>();
         for(JobApplication__c jobApp: triggerDotNew){

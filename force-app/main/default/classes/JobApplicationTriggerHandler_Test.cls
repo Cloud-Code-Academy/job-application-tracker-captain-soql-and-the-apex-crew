@@ -32,6 +32,21 @@ public with sharing class JobApplicationTriggerHandler_Test {
         update jobApp;
         Assert.areEqual(25,  [SELECT Id FROM Task].size(), 'Expected 25 total task to be created.');
     }
+    @isTest 
+    static void testInsertWithPrimaryContact_shouldProceedWithNoChanges() {
+        Contact contact = new Contact(LastName = 'ContactLastName');
+        insert contact;
+        JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
+        JobApplication__c jobApp = new JobApplication__c();
+        jobApp.JobPostingRef__c = jobPost.Id;
+        jobApp.Contact__c = contact.Id;
+        
+        Test.startTest();
+        insert jobApp;
+        Test.stopTest();
+
+        Assert.areEqual(contact.Id, jobApp.Contact__c, 'Expected the Primary Contact to be unmodified');
+    }
     @TestSetup
     static void makeData(){
         Account acc = new Account(
