@@ -15,6 +15,7 @@ public with sharing class JobApplicationTriggerHandler {
     }
 
     public static void setPrimaryContact(Map<Id,JobApplication__c> jobApplicationDotNewMap) {
+        List<JobApplication__c> updateList = new List<JobApplication__c>();
         for (JobApplication__c jobApp : jobApplicationDotNewMap.values()) {
             if (jobApp.Contact__c != null){
                 continue;
@@ -23,7 +24,9 @@ public with sharing class JobApplicationTriggerHandler {
             } else if (isCompanyAvailable(jobApp) && areCompanyContactsAvailable(jobApp)) {
                 jobApp.Contact__c = getCompanyFirstContact(jobApp);
             }
+            updateList.add(jobApp);
         }
+        update updateList;
     }
 
     private static Map<Id, List<String>> createJobApplicationToTaskMap(List<JobApplication__c> triggerDotNew){
