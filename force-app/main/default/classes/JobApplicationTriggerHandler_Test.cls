@@ -34,8 +34,7 @@ public with sharing class JobApplicationTriggerHandler_Test {
     }
     @isTest 
     static void testInsertWithPrimaryContact_shouldProceedWithNoChanges() {
-        Contact contact = new Contact(LastName = 'ContactLastName');
-        insert contact;
+        Contact contact = [SELECT Id FROM Contact LIMIT 1];
         JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
         JobApplication__c jobApp = new JobApplication__c();
         jobApp.JobPostingRef__c = jobPost.Id;
@@ -46,6 +45,10 @@ public with sharing class JobApplicationTriggerHandler_Test {
         Test.stopTest();
 
         Assert.areEqual(contact.Id, jobApp.Contact__c, 'Expected the Primary Contact to be unmodified');
+    }
+    @isTest
+    static void testInsertWithoutPrimaryContact_shouldSetPrimaryContactToCompanyContact() {
+
     }
     @TestSetup
     static void makeData(){
@@ -64,5 +67,7 @@ public with sharing class JobApplicationTriggerHandler_Test {
             JobPostingRef__c = jobPost.Id
         );
         insert jobApp;
+        Contact contact = new Contact(LastName = 'Watney');
+        insert contact;
     }
 }
