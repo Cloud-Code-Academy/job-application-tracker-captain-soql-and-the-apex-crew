@@ -57,7 +57,6 @@ public with sharing class JobApplicationTriggerHandler_Test {
         jobApp.JobPostingRef__c = jobPost.Id;
         jobApp.Account__c = company.Id;
 
-
         Test.startTest();
         insert jobApp;
         Test.stopTest();
@@ -65,6 +64,31 @@ public with sharing class JobApplicationTriggerHandler_Test {
         JobApplication__c result = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id = :jobApp.Id];
 
         Assert.areEqual(contact.Id, result.Contact__c, 'Expected the Primary Contact to be updated through Company relationship');
+    }
+    @isTest
+    private static void testAssignmentWithoutPrimaryContactOnUpdate_shouldSetPrimaryContactFromRelatedContacts() {
+        Account company = [SELECT Id FROM Account LIMIT 1];
+        Contact contact = [SELECT Id FROM Contact LIMIT 1];
+        JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
+        JobApplication__c jobApp = new JobApplication__c();
+        jobApp.JobPostingRef__c = jobPost.Id;
+        // jobApp.Account__c = company.Id;
+        insert jobApp;
+
+        JobApplication__c preUpdateJobApp = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id = :jobApp.Id];
+        Assert.isNull(preUpdateJobApp.Contact__c, 'Job application Primary Contact should not be populated at this point');
+
+        ContactAssociation__c contactAssociation = new ContactAssociation__c();
+        contactAssociation.JobApplication__c = jobApp.Id;
+        contactAssociation.Contact__c = contact.Id;
+        insert contactAssociation;
+
+        Test.startTest();
+        update jobApp;
+        Test.stopTest();
+
+        JobApplication__c postUpdateJobApp = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id = :jobApp.Id];
+        Assert.areEqual(contact.Id, postUpdateJobApp.Contact__c, 'Expected primary contact to populate from related contact');
     }
     @TestSetup
     static void makeData(){
