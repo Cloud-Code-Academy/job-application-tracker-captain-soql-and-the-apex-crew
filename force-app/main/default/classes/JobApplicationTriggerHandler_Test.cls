@@ -135,13 +135,13 @@ public with sharing class JobApplicationTriggerHandler_Test {
     }
     @IsTest
     private static void testBulkInsert_updatePrimaryContactFromCompany() {
-        // when
+        Integer numberOfJobApplicationRecordsToInsert = 400;
+
         Account company = [SELECT Id FROM Account LIMIT 1];
         Contact contact = [SELECT Id, AccountId FROM Contact LIMIT 1];
         contact.AccountId = company.Id;
         update contact;
         JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
-        Integer numberOfJobApplicationRecordsToInsert = 400;
         List<JobApplication__c> jobApplicationList = new List<JobApplication__c>();
         for (Integer i = 0; i < numberOfJobApplicationRecordsToInsert; i++) {
             JobApplication__c jobApp = new JobApplication__c();
