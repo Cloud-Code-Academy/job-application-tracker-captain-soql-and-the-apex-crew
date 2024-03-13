@@ -389,6 +389,12 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentName>takeHomePayCalculator</componentName>
+                <identifier>c_takeHomePayCalculator</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>tabs</name>
                     <value>sidebartabs</value>

@@ -1,0 +1,40 @@
+<!--
+  @description       : 
+  @author            : @Fritz
+  @group             : Cohort2
+  @last modified on  : 03-11-2024
+  @last modified by  : @Fritz
+-->
+<template>
+    <lightning-card title="Take Home Pay Calculator">
+        <lightning-button 
+            variant="brand" 
+            label="Calculate" 
+            title="Calculate"  
+            onclick={calculateTakeHomePay}
+            slot="actions">
+        </lightning-button>
+        <div class="slds-var-p-around_medium">
+            <lightning-input 
+                type="number" 
+                name="salaryName" 
+                label="Salary" 
+                value={salary}
+                onchange={handleSalaryChange}
+                min="0">
+            </lightning-input>
+        </div>
+        <div class="slds-var-p-around_medium">
+            <p>Federal Tax Rate: {currentFederalTaxRate}</p>
+            <p>Medicare Rate: {medicareRate}</p>
+            <p>Social Security Rate: {socialSecurityRate}</p>
+        </div>
+        <div slot="footer">
+            <h1 class="slds-text-heading_large slds-text-title_bold slds-text-title_caps">Pay Results</h1>
+            <p class="slds-text-heading_medium">Yearly Take Home Pay: <span class="slds-text-color_destructive">{yearlyTakeHomePay}</span></p>
+            <p class="slds-text-heading_medium">  6 Months Take Home Pay: <span class="slds-text-color_destructive">{sixMonthlyTakeHomePay}</span></p>
+            <p class="slds-text-heading_medium">Monthly Take Home Pay: <span class="slds-text-color_destructive">{monthlyTakeHomePay}</span></p>
+            <p class="slds-text-heading_medium">Biweekly Take Home Pay: <span class="slds-text-color_destructive">{biweeklyTakeHomePay}</span></p>
+        </div>
+    </lightning-card>
+</template>
