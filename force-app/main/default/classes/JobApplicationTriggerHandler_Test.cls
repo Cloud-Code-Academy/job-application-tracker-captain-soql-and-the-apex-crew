@@ -133,6 +133,34 @@ public with sharing class JobApplicationTriggerHandler_Test {
         Assert.areEqual(contact.Id, jobApp.Contact__c, 'Expected the Primary Contact match contact');
         Assert.areEqual(beforeUpdateJobApp.Contact__c, afterUpdateJobApp.Contact__c, 'Expected the Primary Contact to be unmodified');
     }
+    @IsTest
+    private static void testBulkInsert_updatePrimaryContactFromCompany() {
+        // when
+        Account company = [SELECT Id FROM Account LIMIT 1];
+        Contact contact = [SELECT Id, AccountId FROM Contact LIMIT 1];
+        contact.AccountId = company.Id;
+        update contact;
+        JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
+        Integer numberOfJobApplicationRecordsToInsert = 400;
+        List<JobApplication__c> jobApplicationList = new List<JobApplication__c>();
+        for (Integer i = 0; i < numberOfJobApplicationRecordsToInsert; i++) {
+            JobApplication__c jobApp = new JobApplication__c();
+            jobApp.JobPostingRef__c = jobPost.Id;
+            jobApp.Account__c = company.Id;
+            jobApplicationList.add(jobApp);
+        }
+
+        Test.startTest();
+        insert jobApplicationList;
+        Test.stopTest();
+
+        List<JobApplication__c> queryResults = [SELECT Id, Contact__c FROM JobApplication__c WHERE Id IN :jobApplicationList];
+
+        for (JobApplication__c insertedJobApp : queryResults) {
+            Assert.areEqual(contact.Id, insertedJobApp.Contact__c, 'expected to update record to contact from company');
+        }
+
+    }
     @TestSetup
     static void makeData(){
         Account acc = new Account(
