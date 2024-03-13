@@ -15,8 +15,7 @@ public with sharing class JobApplicationTriggerHandler {
     }
 
     public static void assignPrimaryContactOnInsert(List<JobApplication__c> triggerDotNew) {
-        List<Id> accountIds = getAccountIdsFromJobApplicationList(triggerDotNew);
-        Map<Id, Id> accountIdToContactIdMap = getAccountIdToContactIdMap(accountIds);
+        Map<Id, Id> accountIdToContactIdMap = getAccountIdToContactIdMapFromJobApplicationList(triggerDotNew);
 
         for (JobApplication__c jobApp : triggerDotNew) {
             if (jobApp.Contact__c != null) {
@@ -28,6 +27,7 @@ public with sharing class JobApplicationTriggerHandler {
     }
 
     public static void assignPrimaryContactOnUpdate(List<JobApplication__c> triggerDotNew) {
+        // generates a list of Ids that are missing a primary contact from a list of updated Job Applications
         List<Id> missingPrimaryContactJobApplicationIds = new List<Id>();
         for(JobApplication__c jobApp : triggerDotNew) {
             if (jobApp.Contact__c == null) {
@@ -36,23 +36,29 @@ public with sharing class JobApplicationTriggerHandler {
         }
         List<ContactAssociation__c> filteredContactAssociationList = [SELECT Id, Contact__c, JobApplication__c FROM ContactAssociation__c WHERE JobApplication__c IN :missingPrimaryContactJobApplicationIds];
 
+        // generates a map of Job App Id to Contact Id from the filtered Id list Job Applications
         Map<Id, Id> jobApplicationIdToContactIdMap = new Map<Id, Id>();
         for (ContactAssociation__c contactAssociation : filteredContactAssociationList) {
             jobApplicationIdToContactIdMap.put(contactAssociation.JobApplication__c, contactAssociation.Contact__c);
         }
 
-        List<Id> accountIds = getAccountIdsFromJobApplicationList(triggerDotNew);
-        Map<Id, Id> accountIdToContactIdMap = getAccountIdToContactIdMap(accountIds);
+        Map<Id, Id> accountIdToContactIdMap = getAccountIdToContactIdMapFromJobApplicationList(triggerDotNew);
 
+        // method logic
         for (JobApplication__c jobApp : triggerDotNew) {
             if (jobApp.Contact__c != null) {
                 continue;
-            } else if (jobApplicationIdToContactIdMap.containsKey(jobApp.Id)) {
+            } else if (isRelatedContactAvailable(jobApp.Id, jobApplicationIdToContactIdMap)) {
                 jobApp.Contact__c = jobApplicationIdToContactIdMap.get(jobApp.Id);
             } else if (hasCompanyRef(jobApp) && hasContactLinkedToCompanyRef(jobApp.Account__c, accountIdToContactIdMap)) {
                 jobApp.Contact__c = accountIdToContactIdMap.get(jobApp.Account__c);
             }
         }
+    }
+
+    private static Map<Id, Id> getAccountIdToContactIdMapFromJobApplicationList(List<JobApplication__c> jobApplicationList) {
+        List<Id> accountIds = getAccountIdsFromJobApplicationList(jobApplicationList);
+        return getAccountIdToContactIdMap(accountIds);
     }
 
     private static Map<Id, List<String>> createJobApplicationToTaskMap(List<JobApplication__c> triggerDotNew){
@@ -135,6 +141,10 @@ public with sharing class JobApplicationTriggerHandler {
             accountIdToContactIdMap.put(companyContact.AccountId, companyContact.Id);
         }
         return accountIdToContactIdMap;
+    }
+
+    private static Boolean isRelatedContactAvailable(Id jobAppId, Map<Id, Id> jobApplicationIdToContactIdMap) {
+        return jobApplicationIdToContactIdMap.containsKey(jobAppId);
     }
 
     private static Boolean hasCompanyRef(JobApplication__c jobApp) {
