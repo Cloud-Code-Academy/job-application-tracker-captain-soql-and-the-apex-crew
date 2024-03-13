@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>59.0</apiVersion>
     <isExposed>true</isExposed>
-    <masterLabel>Take Home Pay</masterLabel>
+    <masterLabel>Take Home Pay Calculator</masterLabel>
     <description>Calculates the take home pay</description>
     <targets>
         <target>lightning__RecordPage</target>
