@@ -15,7 +15,7 @@ public with sharing class JobApplicationTriggerHandler {
     }
 
     public static void assignPrimaryContactOnInsert(List<JobApplication__c> triggerDotNew) {
-        List<Id> accountIds = pluckAccountIds(triggerDotNew);
+        List<Id> accountIds = getAccountIdsFromJobApplicationList(triggerDotNew);
         Map<Id, Id> accountIdToContactIdMap = getAccountIdToContactIdMap(accountIds);
 
         for (JobApplication__c jobApp : triggerDotNew) {
@@ -41,7 +41,7 @@ public with sharing class JobApplicationTriggerHandler {
             jobApplicationIdToContactIdMap.put(contactAssociation.JobApplication__c, contactAssociation.Contact__c);
         }
 
-        List<Id> accountIds = pluckAccountIds(triggerDotNew);
+        List<Id> accountIds = getAccountIdsFromJobApplicationList(triggerDotNew);
         Map<Id, Id> accountIdToContactIdMap = getAccountIdToContactIdMap(accountIds);
 
         for (JobApplication__c jobApp : triggerDotNew) {
@@ -119,7 +119,7 @@ public with sharing class JobApplicationTriggerHandler {
         return statusToSubjectMap;
     }
 
-    private static List<Id> pluckAccountIds(List<JobApplication__c> JobApplications) {
+    private static List<Id> getAccountIdsFromJobApplicationList(List<JobApplication__c> JobApplications) {
         List<Id> accountIds = new List<Id>();
         for(JobApplication__c jobApp : JobApplications) {
             if (jobApp.Account__c != null) {
