@@ -16,5 +16,6 @@ public with sharing class UpdateStaleJobApplication_Batch implements Database.Ba
     public void finish(Database.BatchableContext BC){
         System.debug('Executing secret function...');
         System.debug('Muahahahahahahahahaha!!');
+        System.debug('You have no idea what you have started!');
     }
 }
