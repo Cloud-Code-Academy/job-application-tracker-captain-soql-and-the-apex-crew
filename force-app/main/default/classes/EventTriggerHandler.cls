@@ -23,39 +23,28 @@ public with sharing class EventTriggerHandler {
             eventList.add(ev);
             userIdToEvents.put(ev.OwnerId, eventList);
         }
-        System.debug('userIdToEvents =' + userIdToEvents.values());
-        for(Event ev: triggerDotNew){
-            //Need to check the User with ev.OwnerId in query and sort by all of events owned by that person
-            List<Event> eventList = userIdToEvents.get(ev.OwnerId);
-            Long epochStartTime = ev.StartDateTime.getTime();
-            Long epochEndTime = ev.EndDateTime.getTime();
-            //Long epochDifference = epochEndTime - epochStartTime;
-            for(Event eve: eventList){
-                Long eveEpochStartTime = eve.StartDateTime.getTime();
-                Long eveEpochEndTime = eve.EndDateTime.getTime();
-            }
-        //Possible Easy solution from StackExchange
-        //https://stackoverflow.com/questions/17106670/how-to-check-a-timeperiod-is-overlapping-another-time-period-in-java
-
-        /*
-        
-        Long epochStartTime = ev.StartDateTime.getTime();
-        Long epochEndTime = ev.EndDateTime.getTime();
-        System.debug('Epoc Start Time = '+ epochStartTime);
-        System.debug('Epic End Time = ' + epochEndTime);
-        */
-        }
     //Possible Easy solution from StackExchange
     //https://stackoverflow.com/questions/17106670/how-to-check-a-timeperiod-is-overlapping-another-time-period-in-java
         for(Event ev: triggerDotNew){
+            DatesToCompare dates = new DatesToCompare();
+            dates.startDateTimeOne = ev.StartDateTime;
+            dates.endDateTimeOne = ev.EndDateTime;
             for(Event eve: userIdToEvents.get(ev.OwnerId)){
-                if(isOverlapping(ev.StartDateTime, ev.EndDateTime, eve.StartDateTime, eve.EndDateTime)){
+                dates.startDateTimeTwo = eve.StartDateTime;
+                dates.endDateTimeTwo = eve.EndDateTime;
+                if(isOverlapping(dates)){
                     ev.addError('Not on my watch!');
                 }
             }
         }
     }
-    private static Boolean isOverlapping(Datetime startOne, Datetime endOne, Datetime startTwo, Datetime endTwo){
-        return startOne <= endTwo && startTwo <= endOne;
+    private static Boolean isOverlapping(DatesToCompare dates){
+        return dates.startDateTimeOne <= dates.endDateTimeTwo && dates.startDateTimeTwo <= dates.endDateTimeOne;
+    }
+    private class DatesToCompare{
+        private Datetime startDateTimeOne;
+        private Datetime endDateTimeOne;
+        private Datetime startDateTimeTwo;
+        private DateTime endDateTimeTwo;
     }
 }
