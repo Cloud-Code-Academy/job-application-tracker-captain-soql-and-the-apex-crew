@@ -11,11 +11,25 @@ public with sharing class EventTriggerHandler {
                 if(isOverlapping(dates)){
                     ev.addError('You have another scheduled event at this time.');
                 }
+                if(isWeekend(ev.StartDateTime, ev.EndDateTime)){
+                    ev.addError('This is your off day, stop working. Unlike the people who made this.');
+                }
             }
         }
     }
     private static Boolean isOverlapping(DatesToCompare dates){
         return dates.startDateTimeOne <= dates.endDateTimeTwo && dates.startDateTimeTwo <= dates.endDateTimeOne;
+    }
+    private static Boolean isWeekend(Datetime startDateTime, Datetime endDatetime){
+        //https://www.sfdc-code.com/format-datetime-data-in-apex/
+        if(startDateTime.format('E') == 'Sun' || startDateTime.format('E') == 'Sat'){
+            return true;
+        }else if(endDatetime.format('E') == 'Sun' || endDatetime.format('E') == 'Sat'){
+            return true;
+        }else{
+            return false;
+        }
+
     }
     private static Map<Id, List<Event>> createAssignedIdToEventListMap(List<Event> eventsToMap){
         Map<Id, List<Event>> assignedIdToEvents = new Map<Id, List<Event>>();
