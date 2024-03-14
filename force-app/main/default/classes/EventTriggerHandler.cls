@@ -17,7 +17,6 @@ public with sharing class EventTriggerHandler {
             AND StartDateTime >= :now
             WITH USER_MODE
         ];
-        System.debug('EventsOwnedByUsers =' +  eventsOwnedByUsers);
         for(Event ev: eventsOwnedByUsers){
             List<Event> eventList = userIdToEvents.get(ev.OwnerId);
             eventList.add(ev);
@@ -33,7 +32,7 @@ public with sharing class EventTriggerHandler {
                 dates.startDateTimeTwo = eve.StartDateTime;
                 dates.endDateTimeTwo = eve.EndDateTime;
                 if(isOverlapping(dates)){
-                    ev.addError('Not on my watch!');
+                    ev.addError('You have another scheduled event at this time.');
                 }
             }
         }
