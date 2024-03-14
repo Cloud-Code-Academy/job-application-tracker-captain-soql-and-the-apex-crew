@@ -1,5 +1,5 @@
 public with sharing class EventTriggerHandler {
-    public static void preventOverlappingEventsForAssignedUser(List<Event> triggerDotNew) {
+    public static void preventOverlappingFutureEventsForAssignedUser(List<Event> triggerDotNew) {
         Map<Id, List<Event>> ownerAssignedIdToEvents = createAssignedIdToEventListMap(triggerDotNew);
         for(Event ev: triggerDotNew){
             DatesToCompare dates = new DatesToCompare();
