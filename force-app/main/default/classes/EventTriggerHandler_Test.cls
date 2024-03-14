@@ -15,16 +15,11 @@ public with sharing class EventTriggerHandler_Test {
             StartDateTime = Datetime.now() + 2,
             EndDateTime = Datetime.now() + 4
         );
-        try{
-            insert newEvent;
-            //https://salesforce.stackexchange.com/questions/128686/how-do-i-cover-adderror-in-test-class
-            //Cover add error in test class searching
-        }catch (Exception e){
-            
-            Assert.areEqual(e.getCause(), 'You have another scheduled event at this time.', 'Expected failure due to overlap.');
-        }
-        //https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Assert.htm#apex_System_Assert_fail
-        //Assert.fail('Expected failure due to overlap.');
+        Database.SaveResult result = Database.insert(newEvent);
+        //https://salesforce.stackexchange.com/questions/128686/how-do-i-cover-adderror-in-test-class
+        //Cover add error in test class searching
+        Assert.areEqual(false, result.isSuccess(), 'Expected failure due to custom exception.');
+
     }
     @TestSetup
     static void makeData() {
