@@ -15,10 +15,12 @@ public with sharing class EventTriggerHandler_Test {
             StartDateTime = Datetime.now() + 2,
             EndDateTime = Datetime.now() + 4
         );
-        Database.SaveResult result = Database.insert(newEvent);
-        //https://salesforce.stackexchange.com/questions/128686/how-do-i-cover-adderror-in-test-class
-        //Cover add error in test class searching
-        Assert.areEqual(false, result.isSuccess(), 'Expected failure due to custom exception.');
+        try {
+            insert newEvent;
+        } catch (Exception ex) {
+            Boolean expectedExceptionThrown = ex.getMessage().contains('You have another scheduled event at this time.');
+            Assert.areEqual(true, expectedExceptionThrown, 'Expected failure due to custom exception.');
+        }
 
     }
     @TestSetup
