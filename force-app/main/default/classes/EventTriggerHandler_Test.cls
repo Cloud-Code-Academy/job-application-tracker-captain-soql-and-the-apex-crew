@@ -16,7 +16,8 @@ public with sharing class EventTriggerHandler_Test {
             EndDateTime = Datetime.now() + 4
         );
         insert newEvent;
-        Assert.areEqual(1, [SELECT Id FROM Event].size(), 'Expected event to be blocked.');
+        //https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Assert.htm#apex_System_Assert_fail
+        Assert.fail('Expected failure due to overlap.');
     }
     @TestSetup
     static void makeData() {
