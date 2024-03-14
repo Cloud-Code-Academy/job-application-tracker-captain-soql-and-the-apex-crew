@@ -5,36 +5,57 @@ public with sharing class EventTriggerHandler {
         //Get time from a DateTime.
         //Article on coverting DateTime to Epoch and back
         //https://salesforce.stackexchange.com/questions/27020/converting-from-datetime-to-epoch-and-back
-        Map<Id, List<Event>> newUserIdToEvents = new Map<Id, List<Event>>();
+        Map<Id, List<Event>> userIdToEvents = new Map<Id, List<Event>>();
         for(Event ev: triggerDotNew){
-            newUserIdToEvents.put(ev.OwnerId, new List<Event>());
-        }
-        for(Event ev: triggerDotNew){
-            //Need to check the User with ev.OwnerId in query and sort by all of events owned by that person
-            List<Event> eventList = newUserIdToEvents.get(ev.OwnerId);
-            eventList.add(ev);
-            newUserIdToEvents.put(ev.OwnerId, eventList);
+            userIdToEvents.put(ev.OwnerId, new List<Event>());
         }
         Datetime now = datetime.now();
         List<Event> eventsOwnedByUsers = [
             SELECT OwnerId, StartDateTime, EndDateTime 
             FROM Event 
-            WHERE OwnerId IN :newUserIdToEvents.keySet()
+            WHERE OwnerId IN :userIdToEvents.keySet()
             AND StartDateTime >= :now
             WITH USER_MODE
         ];
         System.debug('EventsOwnedByUsers =' +  eventsOwnedByUsers);
         for(Event ev: eventsOwnedByUsers){
-            List<Event> eventList = newUserIdToEvents.get(ev.OwnerId);
+            List<Event> eventList = userIdToEvents.get(ev.OwnerId);
             eventList.add(ev);
-            newUserIdToEvents.put(ev.OwnerId, eventList);
+            userIdToEvents.put(ev.OwnerId, eventList);
         }
-        System.debug('newUserIdToEvents =' + newUserIdToEvents.values());
+        System.debug('userIdToEvents =' + userIdToEvents.values());
+        for(Event ev: triggerDotNew){
+            //Need to check the User with ev.OwnerId in query and sort by all of events owned by that person
+            List<Event> eventList = userIdToEvents.get(ev.OwnerId);
+            Long epochStartTime = ev.StartDateTime.getTime();
+            Long epochEndTime = ev.EndDateTime.getTime();
+            //Long epochDifference = epochEndTime - epochStartTime;
+            for(Event eve: eventList){
+                Long eveEpochStartTime = eve.StartDateTime.getTime();
+                Long eveEpochEndTime = eve.EndDateTime.getTime();
+            }
+        //Possible Easy solution from StackExchange
+        //https://stackoverflow.com/questions/17106670/how-to-check-a-timeperiod-is-overlapping-another-time-period-in-java
+
         /*
+        
         Long epochStartTime = ev.StartDateTime.getTime();
         Long epochEndTime = ev.EndDateTime.getTime();
         System.debug('Epoc Start Time = '+ epochStartTime);
         System.debug('Epic End Time = ' + epochEndTime);
         */
+        }
+    //Possible Easy solution from StackExchange
+    //https://stackoverflow.com/questions/17106670/how-to-check-a-timeperiod-is-overlapping-another-time-period-in-java
+        for(Event ev: triggerDotNew){
+            for(Event eve: userIdToEvents.get(ev.OwnerId)){
+                if(isOverlapping(ev.StartDateTime, ev.EndDateTime, eve.StartDateTime, eve.EndDateTime)){
+                    ev.addError('Not on my watch!');
+                }
+            }
+        }
+    }
+    private static Boolean isOverlapping(Datetime startOne, Datetime endOne, Datetime startTwo, Datetime endTwo){
+        return startOne <= endTwo && startTwo <= endOne;
     }
 }
