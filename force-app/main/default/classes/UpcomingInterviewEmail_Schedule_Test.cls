@@ -24,6 +24,22 @@ private class UpcomingInterviewEmail_Schedule_Test {
 
     @isTest
     static void myUnitTest() {
-        // TO DO: implement unit test
+        Integer numRecordsToGenerate = 5;
+        List<Event> testInterviewEvents = new List<Event>();
+        for (Integer i = 0; i < numRecordsToGenerate; i++) {
+            Event newEvent = new Event();
+            newEvent.RecordType.Name = 'Interview';
+            newEvent.Subject = 'Interview' + i;
+            newEvent.StartDateTime = Datetime.now().addDays(1);
+            newEvent.EndDateTime = newEvent.StartDateTime.addMinutes(30);
+            newEvent.OwnerId = UserInfo.getUserId();
+            testInterviewEvents.add(newEvent);
+        }
+        insert testInterviewEvents;
+        Test.startTest();
+        // schedule the email reminder
+        Test.stopTest();
+
+        // assert
     }
 }
