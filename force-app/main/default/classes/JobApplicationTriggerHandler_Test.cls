@@ -1,5 +1,16 @@
+/**
+ * @description       : 
+ * @author            : @Oizon, @off-nadir-insight, @Fritz
+ * @group             : Cohort2
+ * @last modified on  : 03-13-2024
+ * @last modified by  : @Fritz
+**/
 @isTest
 public with sharing class JobApplicationTriggerHandler_Test {
+
+    // public static final double MEDICARE_TAX_RATE = 0.0620;
+    // public static final double SOCIAL_SECURITY_TAX = 0.0145;
+
     @isTest
     static void testDefaultInsert() {
         List<Task> taskOnJobApp = [SELECT Id FROM Task];
@@ -180,5 +191,24 @@ public with sharing class JobApplicationTriggerHandler_Test {
         insert jobApp;
         Contact contact = new Contact(LastName = 'Watney');
         insert contact;
+    }
+
+    @IsTest
+    private static void testOnInsertEstimatedTakeHomePaySingle() {
+        JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
+        JobApplication__c jobApp = new JobApplication__c();
+        jobApp.JobPostingRef__c = jobPost.Id;
+        jobApp.Name = 'My Favorite App';
+        jobApp.Salary__c = 100000;
+
+        Test.startTest();
+        insert jobApp;
+        Test.stopTest();
+
+        JobApplication__c JobApplication = [SELECT id, Name, Estimated_Yearly_Pay__c, Estimated_Monthly_Pay__c FROM jobApplication__c WHERE id = :jobApp.id];
+        System.debug(jobApplication);
+        
+        Assert.areEqual(92350, JobApplication.Estimated_Yearly_Pay__c, 'Yearly Pay should equal 92350');
+        Assert.areEqual(7696, JobApplication.Estimated_Monthly_Pay__c, 'Monthley Pay should equal 7695.83');
     }
 }

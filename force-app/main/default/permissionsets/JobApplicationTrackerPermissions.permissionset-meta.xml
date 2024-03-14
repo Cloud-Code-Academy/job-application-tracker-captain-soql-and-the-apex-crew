@@ -72,17 +72,17 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>JobApplication__c.Estimated_Federal_Tax__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>JobApplication__c.Estimated_Monthly_Pay__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>JobApplication__c.Estimated_Yearly_Pay__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>JobApplication__c.Federal_Income_Tax__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

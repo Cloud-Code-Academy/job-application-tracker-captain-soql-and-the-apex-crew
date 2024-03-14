@@ -232,8 +232,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Medicare__c</fieldItem>
-                <identifier>RecordMedicare_cField2</identifier>
+                <fieldItem>Record.Estimated_Federal_Tax__c</fieldItem>
+                <identifier>RecordEstimated_Federal_Tax__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-a5ba53ca-22d1-42c8-8635-ea0b03efd455</name>
