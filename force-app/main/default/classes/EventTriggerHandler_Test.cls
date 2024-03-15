@@ -3,8 +3,8 @@ public with sharing class EventTriggerHandler_Test {
     @isTest
     static void testNoOverlapButOtherEvents() {
         Event newEvent = new Event(
-            StartDateTime = Datetime.now() + 4,
-            EndDateTime = Datetime.now() + 6
+            StartDateTime = Datetime.newInstance(2124,6,19,13,15,2),
+            EndDateTime = Datetime.newInstance(2124,6,19,13,45,2)
         );
         insert newEvent;
         Assert.areEqual(2, [SELECT Id FROM Event].size(), 'Expected two events created.');
@@ -12,16 +12,28 @@ public with sharing class EventTriggerHandler_Test {
     @isTest
     static void testOverlapWithOtherEvents() {
         Event newEvent = new Event(
-            StartDateTime = Datetime.now() + 2,
-            EndDateTime = Datetime.now() + 4
+            StartDateTime = Datetime.newInstance(2124,6,19,12,45,2),
+            EndDateTime = Datetime.newInstance(2124,6,19,13,30,2)
         );
         try {
             insert newEvent;
         } catch (Exception ex) {
             Boolean expectedExceptionThrown = ex.getMessage().contains('You have another scheduled event at this time.');
-            Assert.areEqual(true, expectedExceptionThrown, 'Expected failure due to custom exception.');
+            Assert.areEqual(true, expectedExceptionThrown, 'Expected failure due to overlapping custom exception.');
         }
-
+    }
+    @isTest
+    static void testOnAWeekend() {
+        Event newEvent = new Event(
+            StartDateTime = Datetime.newInstance(2124,6,25,12,45,2),
+            EndDateTime = Datetime.newInstance(2124,6,25,13,30,2)
+        );
+        try {
+            insert newEvent;
+        } catch (Exception ex) {
+            Boolean expectedExceptionThrown = ex.getMessage().contains('This is your off day, stop working. Unlike the people who made this.');
+            Assert.areEqual(true, expectedExceptionThrown, 'Expected failure due to weekend custom exception.');
+        }
     }
     @TestSetup
     static void makeData() {
@@ -41,8 +53,8 @@ public with sharing class EventTriggerHandler_Test {
         );
         insert jobApp;
         Event newEvent = new Event(
-            StartDateTime = Datetime.now() + 1,
-            EndDateTime = Datetime.now() + 3
+            StartDateTime = Datetime.newInstance(2124,6,19,12,30,2),
+            EndDateTime = Datetime.newInstance(2124,6,19,13,00,2)
         );
         insert newEvent;
     }
