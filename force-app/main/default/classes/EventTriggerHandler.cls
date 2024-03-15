@@ -21,7 +21,10 @@ public with sharing class EventTriggerHandler {
         return dates.startDateTimeOne <= dates.endDateTimeTwo && dates.startDateTimeTwo <= dates.endDateTimeOne;
     }
     private static Boolean isWeekend(Datetime startDateTime, Datetime endDatetime){
-        return startDateTime.format('E') == 'Sun' || startDateTime.format('E') == 'Sat' || endDatetime.format('E') == 'Sun' || endDatetime.format('E') == 'Sat';
+        return  startDateTime.format('E') == 'Sun' || 
+                startDateTime.format('E') == 'Sat' || 
+                endDatetime.format('E') == 'Sun' || 
+                endDatetime.format('E') == 'Sat';
     }
     private static Map<Id, List<Event>> createAssignedIdToEventListMap(List<Event> eventsToMap){
         Map<Id, List<Event>> assignedIdToEvents = new Map<Id, List<Event>>();
