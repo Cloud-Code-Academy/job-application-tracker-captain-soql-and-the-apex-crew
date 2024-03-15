@@ -2,14 +2,11 @@
  * @description       : 
  * @author            : @Oizon, @off-nadir-insight, @Fritz
  * @group             : Cohort2
- * @last modified on  : 03-13-2024
+ * @last modified on  : 03-15-2024
  * @last modified by  : @Fritz
 **/
 @isTest
 public with sharing class JobApplicationTriggerHandler_Test {
-
-    // public static final double MEDICARE_TAX_RATE = 0.0620;
-    // public static final double SOCIAL_SECURITY_TAX = 0.0145;
 
     @isTest
     static void testDefaultInsert() {
@@ -186,7 +183,8 @@ public with sharing class JobApplicationTriggerHandler_Test {
         JobApplication__c jobApp = new JobApplication__c(
             Account__c = acc.Id,
             Name = 'I\'m thinking this should be an Autonumber now...',
-            JobPostingRef__c = jobPost.Id
+            JobPostingRef__c = jobPost.Id,
+            Salary__c = 100000
         );
         insert jobApp;
         Contact contact = new Contact(LastName = 'Watney');
@@ -194,21 +192,94 @@ public with sharing class JobApplicationTriggerHandler_Test {
     }
 
     @IsTest
-    private static void testOnInsertEstimatedTakeHomePaySingle() {
-        JobPosting__c jobPost = [SELECT Id FROM JobPosting__c LIMIT 1];
-        JobApplication__c jobApp = new JobApplication__c();
-        jobApp.JobPostingRef__c = jobPost.Id;
-        jobApp.Name = 'My Favorite App';
-        jobApp.Salary__c = 100000;
-
-        Test.startTest();
-        insert jobApp;
-        Test.stopTest();
-
-        JobApplication__c JobApplication = [SELECT id, Name, Estimated_Yearly_Pay__c, Estimated_Monthly_Pay__c FROM jobApplication__c WHERE id = :jobApp.id];
-        System.debug(jobApplication);
+    private static void testEstimatedTakeHomePayOnInsertAndUpdate_Single() {
+            // Check for insert
+        JobApplication__c jobApp = [SELECT Id, Name, Estimated_Yearly_Pay__c, Estimated_Monthly_Pay__c, Social_Security_Tax__c, Estimated_Federal_Tax__c, Medicare__c 
+                                    FROM JobApplication__c 
+                                    LIMIT 1
+                                    ];
         
-        Assert.areEqual(92350, JobApplication.Estimated_Yearly_Pay__c, 'Yearly Pay should equal 92350');
-        Assert.areEqual(7696, JobApplication.Estimated_Monthly_Pay__c, 'Monthley Pay should equal 7695.83');
+        Assert.areEqual(74950, jobApp.Estimated_Yearly_Pay__c, 'Yearly Pay should equal 74950');
+        Assert.areEqual(6246, jobApp.Estimated_Monthly_Pay__c, 'Monthly Pay should equal 6246');
+        Assert.areEqual(6200, jobApp.Medicare__c, 'Medicare should equal 6200');
+        Assert.areEqual(1450, jobApp.Social_Security_Tax__c, 'Social Security should equal 1450');
+        Assert.areEqual(17400, jobApp.Estimated_Federal_Tax__c, 'Monthley Pay should equal 17400');
+    
+            // update the salary and check again
+        jobApp.Salary__c = 200000;
+        
+        Test.startTest() ;
+        update jobApp;
+        Test.stopTest() ;   
+
+        jobApplication__c updatedJobApp = [ SELECT Id, Name, Estimated_Yearly_Pay__c, Estimated_Monthly_Pay__c, Social_Security_Tax__c, Estimated_Federal_Tax__c, Medicare__c
+                                            FROM jobApplication__c
+                                            LIMIT 1
+                                            ];
+            // Asserts
+        Assert.areEqual(149900, updatedJobApp.Estimated_Yearly_Pay__c, 'Yearly Pay should equal 74950');
+        Assert.areEqual(12492,  updatedJobApp.Estimated_Monthly_Pay__c, 'Monthly Pay should equal 6246');
+        Assert.areEqual(12400,  updatedJobApp.Medicare__c, 'Medicare should equal 6200');
+        Assert.areEqual(2900,  updatedJobApp.Social_Security_Tax__c, 'Social Security should equal 1450');
+        Assert.areEqual(34800,  updatedJobApp.Estimated_Federal_Tax__c, 'Monthly Pay should equal 17400');
+    }
+    
+    @IsTest
+    private static void testEstimatedTakeHomePayOnInsertAndUpdate_Bulk() {
+               // Check for inserts
+        List<JobApplication__c> jobApps = new List<JobApplication__c>();
+        List<JobApplication__c> listOfUpdatedAppJobApps = new List<JobApplication__c>();
+        Account  account = [SELECT Id, Name FROM Account LIMIT 1];
+        JobPosting__c jobPost = [SELECT Id, Name FROM JobPosting__c LIMIT 1];
+
+        for (Integer i = 0; i < 200; i++) {
+            jobApps.add(new JobApplication__c(Name = 'massLayOffsAtTwitch' + i, Salary__c = 100000, JobPostingRef__c = jobPost.Id, Account__c = account.Id));
+        }
+        
+        insert jobApps;
+        
+
+
+        // Query for all Job Applications
+        List<JobApplication__c> insertedJobApps = [ 
+            SELECT Id, Name, Estimated_Yearly_Pay__c, Estimated_Monthly_Pay__c, Social_Security_Tax__c, Estimated_Federal_Tax__c, Medicare__c
+            FROM JobApplication__c
+            WHERE Id IN :jobApps
+            ];
+        Assert.areEqual(200, insertedJobApps.size(), 'Expected 200 job applications to be created');
+
+        for (JobApplication__c jobApp : insertedJobApps) {
+            Assert.areEqual(74950, jobApp.Estimated_Yearly_Pay__c, 'Yearly Pay should equal 74950');
+            Assert.areEqual(6246, jobApp.Estimated_Monthly_Pay__c, 'Monthly Pay should equal 6246');
+            Assert.areEqual(6200, jobApp.Medicare__c, 'Medicare should equal 6200');
+            Assert.areEqual(1450, jobApp.Social_Security_Tax__c, 'Social Security should equal 1450');
+            Assert.areEqual(17400, jobApp.Estimated_Federal_Tax__c, 'Monthley Pay should equal 17400');
+        }
+
+        for(JobApplication__c jobAppToUpdate : insertedJobApps){
+            jobAppToUpdate.Salary__c = 200000;
+            listOfUpdatedAppJobApps.add(jobAppToUpdate);
+        }
+
+        // Update the salary field on all the job applications
+        Test.startTest() ;
+        update listOfUpdatedAppJobApps; 
+        Test.stopTest() ;
+
+        List<jobApplication__c> updatedJobAppRetrieved = [ 
+            SELECT Id, Name, Estimated_Yearly_Pay__c, Estimated_Monthly_Pay__c, Social_Security_Tax__c, Estimated_Federal_Tax__c, Medicare__c
+            FROM jobApplication__c
+            WHERE Id IN :listOfUpdatedAppJobApps
+            ];
+                // Asserts
+            Assert.areEqual(200, insertedJobApps.size(), 'Expected 200 job applications to be created');
+            
+        for (JobApplication__c updatedJobApp : updatedJobAppRetrieved) {
+            Assert.areEqual(149900, updatedJobApp.Estimated_Yearly_Pay__c, 'Yearly Pay should equal 74950');
+            Assert.areEqual(12492,  updatedJobApp.Estimated_Monthly_Pay__c, 'Monthly Pay should equal 6246');
+            Assert.areEqual(12400,  updatedJobApp.Medicare__c, 'Medicare should equal 6200');
+            Assert.areEqual(2900,  updatedJobApp.Social_Security_Tax__c, 'Social Security should equal 1450');
+            Assert.areEqual(34800,  updatedJobApp.Estimated_Federal_Tax__c, 'Monthly Pay should equal 17400');
+        }
     }
 }

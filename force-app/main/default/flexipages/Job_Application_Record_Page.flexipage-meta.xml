@@ -126,7 +126,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Estimated_Yearly_Pay__c</fieldItem>
                 <identifier>RecordEstimated_Yearly_Pay_cField</identifier>
@@ -136,7 +136,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Estimated_Monthly_Pay__c</fieldItem>
                 <identifier>RecordEstimated_Monthly_Pay_cField</identifier>
@@ -210,7 +210,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Medicare__c</fieldItem>
                 <identifier>RecordMedicare_cField</identifier>
@@ -220,7 +220,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Social_Security_Tax__c</fieldItem>
                 <identifier>RecordSocial_Security_Tax_cField</identifier>
@@ -230,7 +230,7 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>none</value>
+                    <value>readonly</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Estimated_Federal_Tax__c</fieldItem>
                 <identifier>RecordEstimated_Federal_Tax__cField</identifier>
