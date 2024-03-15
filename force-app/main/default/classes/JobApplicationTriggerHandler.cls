@@ -1,8 +1,8 @@
 /**
- * @description       : 
+ * @description       : Operations on the JobApplication Object
  * @author            : @William, @Tyler @Fritz
  * @group             : Cohort2
- * @last modified on  : 03-13-2024
+ * @last modified on  : 03-15-2024
  * @last modified by  : @Fritz
 **/
 
@@ -11,16 +11,6 @@ public with sharing class JobApplicationTriggerHandler {
     public static final double MEDICARE_TAX_RATE = 0.0620;
     public static final double SOCIAL_SECURITY_TAX = 0.0145;
     public static final double FEDERAL_TAX =0.174;
-
-    public static void estimateTakeHomePay(List<JobApplication__c> triggerDotNew) {
-        List<JobApplication__c> jobAppsWithSalaries = new List<JobApplication__c>();
-        for(JobApplication__c jobApp : triggerDotNew) {
-            if(jobApp.Salary__c != null) {
-                calculatePay(jobApp);
-                jobAppsWithSalaries.add(jobApp);
-            }
-        }
-    }
 
     public static void createTaskBasedOnStatus(List<JobApplication__c> triggerDotNew) {
         Map<Id, List<String>> jobApplicationIdToTaskMap = createJobApplicationToTaskMap(triggerDotNew);
@@ -177,8 +167,18 @@ public with sharing class JobApplicationTriggerHandler {
         return accountIdToContactIdMap.get(companyIdFromJobApp) != null;
     }
 
-    public static void calculatePay(JobApplication__c jobApp) {
+        // Calculate Take Home Pay
+    public static void estimateTakeHomePay(List<JobApplication__c> triggerDotNew) {
+        List<JobApplication__c> jobAppsWithSalaries = new List<JobApplication__c>();
+        for(JobApplication__c jobApp : triggerDotNew) {
+            if(jobApp.Salary__c != null) {
+                calculatePay(jobApp);
+                jobAppsWithSalaries.add(jobApp);
+            }
+        }
+    }
 
+    public static void calculatePay(JobApplication__c jobApp) {
         double totalMedicare = MEDICARE_TAX_RATE * jobApp.Salary__c;
         double totalSocialSecurity = SOCIAL_SECURITY_TAX * jobApp.Salary__c;
         double totalFederalTax = FEDERAL_TAX * jobApp.Salary__c;
@@ -190,5 +190,5 @@ public with sharing class JobApplicationTriggerHandler {
         jobApp.Medicare__c = totalMedicare;
         jobApp.Social_Security_Tax__c = totalSocialSecurity;
         jobApp.Estimated_Federal_Tax__c = totalFederalTax;
-        }
+    }
 }
