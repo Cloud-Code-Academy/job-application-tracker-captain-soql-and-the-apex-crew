@@ -6,7 +6,8 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
                 Id,
                 Location,
                 OwnerId, 
-                StartDateTime 
+                StartDateTime,
+                Subject
             FROM Event 
             WHERE 
                 RecordType.Name = 'Interview' 
