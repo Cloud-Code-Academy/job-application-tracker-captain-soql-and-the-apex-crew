@@ -45,23 +45,8 @@ private class UpcomingInterviewEmail_Schedule_Test {
     //         6, 0, 0
     //     );
 
-    //     List<Event> interviewsTomorrow = [
-    //         SELECT 
-    //             Id,
-    //             Location,
-    //             OwnerId, 
-    //             StartDateTime,
-    //             Subject
-    //         FROM Event 
-    //         WHERE 
-    //             RecordType.Name = 'Interview' 
-    //             AND StartDateTime = NEXT_N_DAYS:1
-    //     ];
+    //     generateInterviewsFromUserIdTestData(generateUserTestData());
 
-    //     for (Event event : interviewsTomorrow) {
-    //         event.OwnerId = null;
-    //     }
-    //     update interviewsTomorrow;
 
     //     UpcomingInterviewEmail_Schedule scheduleJob = new UpcomingInterviewEmail_Schedule();
 
@@ -86,32 +71,55 @@ private class UpcomingInterviewEmail_Schedule_Test {
     //     Assert.areEqual(tomorrow6AMDateTime, jobEmailReminderId.NextFireTime, 'Expected next fire time to be tomorrow at 6am');
     // }
 
-    // @isTest 
-    // private static List<User> generateUserTestData() {
-    //     List<Profile> standardProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
-
-    //     List<User> users = new List<User>();
-    //     String uniqueString = String.valueOf(DateTime.now().getTime());
-    //     List<User> testUsers = new List<User>();
-    //     for(Integer i = 0; i < 15; i++) {
-    //         User u = new User(
-    //             LastName = 'TestUser' + i,
-    //             FirstName = 'FirstName' + i,
-    //             Email = 'testuser' + i + '@example.com',
-    //             Username = 'testuser' + i + '@example.com',
-    //             Alias = 'TUser' + i,
-    //             ProfileId = '005XXXXXXXXXXXX', // Replace with the desired Profile Id
-    //             TimeZoneSidKey = 'America/Los_Angeles',
-    //             LocaleSidKey = 'en_US',
-    //             EmailEncodingKey = 'UTF-8',
-    //             LanguageLocaleKey = 'en_US',
-    //             IsActive = true
-    //         );
-    //         testUsers.add(u);
-    //     }
+    @isTest 
+    private static List<User> generateUserTestData() {
+        Id standardProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id;
+        final Integer NUM_USERS_TO_CREATE = 51;
         
-    //     insert testUsers;
+        List<User> users = new List<User>();
+        String uniqueString = String.valueOf(DateTime.now().getTime());
+        List<User> testUsers = new List<User>();
+        for(Integer i = 0; i < NUM_USERS_TO_CREATE; i++) {
+            User user = new User(
+                LastName = 'TestUser' + i,
+                FirstName = 'FirstName' + i,
+                Email = 'testuser' + i + uniqueString + '@example.com',
+                Username = 'testuser' + i + uniqueString + '@example.com',
+                Alias = 'TUser' + i,
+                ProfileId = standardProfileId,
+                TimeZoneSidKey = 'America/Los_Angeles',
+                LocaleSidKey = 'en_US',
+                EmailEncodingKey = 'UTF-8',
+                LanguageLocaleKey = 'en_US',
+                IsActive = true
+            );
+            testUsers.add(user);
+        }
+        
+        insert testUsers;
+        return testUsers;
+    }
+    // @isTest 
+    // private static List<Event> generateInterviewsFromUserIdTestData(List<Id> testUserIds) {
+    //     List<Event> events = new List<Event>();
+
+    //     for (Id testUserId : testUserIds) {
+    //         for (Integer i = 0; i < NUMBER_OF_TEST_INTERVIEWS_TOMORROW; i++) {
+    //             Event newEvent = new Event(
+    //                 Subject = 'Test Interview ' + i,
+    //                 StartDateTime = DateTime.now().addDays(1),
+    //                 EndDateTime = Datetime.now().addDays(1).addMinutes(30),
+    //                 Location = 'Online',
+    //                 OwnerId = testUserId,
+    //                 RecordTypeId = INTERVIEW_EVENT_RECORDTYPE_ID
+    //             );
+    //             events.add(newEvent);
+    //         }
+    //     }
+    //     insert events;
     // }
+
+
 
     @isTest
     static void upcomingInterviewEmailGeneration_Test() {
@@ -172,7 +180,6 @@ private class UpcomingInterviewEmail_Schedule_Test {
         User testUser = new User(
             Alias = 'testUser',
             Username = 'testUser' + uniqueString + '@test.com',
-            // Email = 'testUser' + uniqueString + '@test.com',
             Email = EMAIL_TARGET_FOR_TEST,
             LastName = 'testUser' + uniqueString,
             ProfileId = standardUserProfile.Id,
@@ -182,8 +189,6 @@ private class UpcomingInterviewEmail_Schedule_Test {
             EmailEncodingKey = 'UTF-8'
         );
         insert testUser;
-
-        RecordType interviewEventRecordType = [SELECT Id, Name FROM RecordType WHERE SobjectType='Event' AND Name='Interview'];
 
         List<Event> events = new List<Event>();
         for (Integer i = 0; i < NUMBER_OF_TEST_INTERVIEWS_TOMORROW; i++) {
