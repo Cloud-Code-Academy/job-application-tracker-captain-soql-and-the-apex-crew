@@ -1,8 +1,8 @@
 /**
  * @description       : Tests on job Application Trigger Handler methods.
- * @author            : @Oizon, @off-nadir-insight, @Fritz
+ * @author            : @Oizon, @off-nadir-insight, @Fritzb00
  * @group             : Cohort2
- * @last modified on  : 03-15-2024
+ * @last modified on  : 03-16-2024
  * @last modified by  : @Fritz
 **/
 @isTest
