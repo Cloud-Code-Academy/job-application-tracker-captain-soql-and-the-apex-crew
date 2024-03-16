@@ -2,6 +2,9 @@ public with sharing class EventTriggerHandler {
     public static void preventOverlappingFutureEventsForAssignedUser(List<Event> triggerDotNew) {
         Map<Id, List<Event>> ownerAssignedIdToEvents = createAssignedIdToEventListMap(triggerDotNew);
         for(Event ev: triggerDotNew){
+            if(isWeekend(ev.StartDateTime, ev.EndDateTime)){
+                ev.addError('This is your off day, stop working. Unlike the people who made this.');
+            }
             DatesToCompare dates = new DatesToCompare();
             dates.startDateTimeOne = ev.StartDateTime;
             dates.endDateTimeOne = ev.EndDateTime;
@@ -10,9 +13,6 @@ public with sharing class EventTriggerHandler {
                 dates.endDateTimeTwo = eve.EndDateTime;
                 if(isOverlapping(dates)){
                     ev.addError('You have another scheduled event at this time.');
-                }
-                if(isWeekend(ev.StartDateTime, ev.EndDateTime)){
-                    ev.addError('This is your off day, stop working. Unlike the people who made this.');
                 }
             }
         }
