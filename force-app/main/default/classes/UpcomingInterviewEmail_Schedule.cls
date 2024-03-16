@@ -1,58 +1,18 @@
 
 public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable {
     public void execute(SchedulableContext ctx) {
-        sendDailyInterviewEmailReminders();
-        // // query for interview events with a start date tomorrow
-        // List<Event> interviewsTomorrow = [
-        //     SELECT 
-        //         Id,
-        //         Location,
-        //         OwnerId, 
-        //         StartDateTime,
-        //         Subject
-        //     FROM Event 
-        //     WHERE 
-        //         RecordType.Name = 'Interview' 
-        //         AND StartDateTime = NEXT_N_DAYS:1
-        //     WITH SYSTEM_MODE
-        // ];
-
-        // if (!interviewsTomorrow.isEmpty()) {
-        //     Map<Id, List<Event>> ownerIdToListOfInterviewsTomorrowMap = generateMapOfOwnerIdsToInterviews(interviewsTomorrow);
-        //     List<Messaging.SingleEmailMessage> emailsToSendOut = new List<Messaging.SingleEmailMessage>();
-        //     for (Id ownerId : ownerIdToListOfInterviewsTomorrowMap.keySet()) {
-        //         Messaging.SingleEmailMessage emailToSend = generateEmail(ownerId, ownerIdToListOfInterviewsTomorrowMap.get(ownerId));
-        //         emailsToSendOut.add(emailToSend);
-        //     }
-        //     try {
-        //         Messaging.sendEmail(emailsToSendOut);
-        //     } catch (Exception ex) {
-        //         System.debug('Error sending email: ' + ex.getMessage());
-        //     } 
-        // }
-
+        sendDailyInterviewEmailReminders(1);
     }
     @TestVisible
-    private static void sendDailyInterviewEmailReminders() {
-        List<Event> interviewsTomorrow = [
-            SELECT 
-                Id,
-                Location,
-                OwnerId, 
-                StartDateTime,
-                Subject
-            FROM Event 
-            WHERE 
-                RecordType.Name = 'Interview' 
-                AND StartDateTime = NEXT_N_DAYS:1
-            WITH SYSTEM_MODE
-        ];
+    private static void sendDailyInterviewEmailReminders(Integer nextNDays) {
+        String queryString = 'SELECT Id, Location, OwnerId, StartDateTime,Subject FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:' + nextNDays + ' WITH SYSTEM_MODE';
+        List<Event> upcomingInterviewList = Database.query(queryString);
 
-        if (!interviewsTomorrow.isEmpty()) {
-            Map<Id, List<Event>> ownerIdToListOfInterviewsTomorrowMap = generateMapOfOwnerIdsToInterviews(interviewsTomorrow);
+        if (!upcomingInterviewList.isEmpty()) {
+            Map<Id, List<Event>> ownerIdToListOfUpcomingInterviewsMap = generateMapOfOwnerIdsToInterviews(upcomingInterviewList);
             List<Messaging.SingleEmailMessage> emailsToSendOut = new List<Messaging.SingleEmailMessage>();
-            for (Id ownerId : ownerIdToListOfInterviewsTomorrowMap.keySet()) {
-                Messaging.SingleEmailMessage emailToSend = generateEmail(ownerId, ownerIdToListOfInterviewsTomorrowMap.get(ownerId));
+            for (Id ownerId : ownerIdToListOfUpcomingInterviewsMap.keySet()) {
+                Messaging.SingleEmailMessage emailToSend = generateEmail(ownerId, ownerIdToListOfUpcomingInterviewsMap.get(ownerId));
                 emailsToSendOut.add(emailToSend);
             }
             try {
@@ -67,7 +27,7 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
     private static Messaging.SingleEmailMessage generateEmail(Id ownerId, List<Event> ownerTasks) {
         Messaging.SingleEmailMessage newEmail = new Messaging.SingleEmailMessage();
         String eventTableHTML = generateEventTable(ownerTasks);
-        newEmail.setSubject('Interview Events Tomorrow: ' + Date.today().addDays(1));
+        newEmail.setSubject('Interview Events Upcoming');
         newEmail.setHtmlBody(eventTableHTML);
         newEmail.setToAddresses(new String[] {ownerId});
         return newEmail;
@@ -97,7 +57,6 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
         }
         return interviewsByOwnerId;
     } 
-
 }
 
 /*

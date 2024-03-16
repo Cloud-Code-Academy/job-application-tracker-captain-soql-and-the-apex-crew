@@ -1,6 +1,6 @@
 @isTest
 private class UpcomingInterviewEmail_Schedule_Test {
-    private static final Integer NUMBER_OF_TEST_INTERVIEWS_TOMORROW = 5;
+    private static final Integer NUMBER_OF_TEST_INTERVIEWS_UPCOMING = 5;
     private static final Id INTERVIEW_EVENT_RECORDTYPE_ID = [
         SELECT Id, Name 
         FROM RecordType 
@@ -10,8 +10,8 @@ private class UpcomingInterviewEmail_Schedule_Test {
     private static final Integer HEADER_ROW = 1;
     // Schedule the job to run daily at 6 AM
     private static final String DAILY_6AM = '0 0 6 * * ?';
-    private static final String EMAIL_TARGET_FOR_TEST = 'off.nadir.insight@gmail.com';
-    // private static final String EMAIL_TARGET_FOR_TEST = 'testUser' + uniqueString + '@test.com';
+    private static final String EMAIL_TARGET_FOR_TEST = 'testUser' + String.valueOf(DateTime.now().getTime()) + '@test.com';
+    private static final Integer LOOK_AHEAD_NEXT_N_DAYS = 3;
 
     @isTest 
     static void schedulableLogic_Test_shouldSchedule() {
@@ -104,7 +104,7 @@ private class UpcomingInterviewEmail_Schedule_Test {
     //     List<Event> events = new List<Event>();
 
     //     for (Id testUserId : testUserIds) {
-    //         for (Integer i = 0; i < NUMBER_OF_TEST_INTERVIEWS_TOMORROW; i++) {
+    //         for (Integer i = 0; i < NUMBER_OF_TEST_INTERVIEWS_UPCOMING; i++) {
     //             Event newEvent = new Event(
     //                 Subject = 'Test Interview ' + i,
     //                 StartDateTime = DateTime.now().addDays(1),
@@ -124,24 +124,27 @@ private class UpcomingInterviewEmail_Schedule_Test {
     @isTest
     static void upcomingInterviewEmailGeneration_Test() {
         User testUser = [SELECT Id FROM User WHERE LastName LIKE '%testUser%' LIMIT 1];
-        List<Event> eventsTomorrowList = [
-            SELECT Id, OwnerId, Subject, StartDateTime, EndDateTime, Location, RecordTypeId
-            FROM Event
-            WHERE RecordTypeId = :INTERVIEW_EVENT_RECORDTYPE_ID
-            AND StartDateTime = NEXT_N_DAYS:1
-        ];
+        String queryString = 'SELECT Id, OwnerId, Subject, StartDateTime, EndDateTime, Location, RecordTypeId FROM Event WHERE RecordTypeId = :INTERVIEW_EVENT_RECORDTYPE_ID AND StartDateTime = NEXT_N_DAYS:' + LOOK_AHEAD_NEXT_N_DAYS;
+
+        List<Event> eventsUpcomingList = Database.query(queryString);
+        // List<Event> eventsTomorrowList = [
+        //     SELECT Id, OwnerId, Subject, StartDateTime, EndDateTime, Location, RecordTypeId
+        //     FROM Event
+        //     WHERE RecordTypeId = :INTERVIEW_EVENT_RECORDTYPE_ID
+        //     AND StartDateTime = NEXT_N_DAYS:3
+        // ];
 
         Test.startTest();
-        Messaging.SingleEmailMessage resultEmail = UpcomingInterviewEmail_Schedule.generateEmail(testUser.Id, eventsTomorrowList);
+        Messaging.SingleEmailMessage resultEmail = UpcomingInterviewEmail_Schedule.generateEmail(testUser.Id, eventsUpcomingList);
         Test.stopTest();
 
         Assert.areEqual(
-            NUMBER_OF_TEST_INTERVIEWS_TOMORROW + HEADER_ROW, 
+            NUMBER_OF_TEST_INTERVIEWS_UPCOMING + HEADER_ROW, 
             resultEmail.getHtmlBody().countMatches('<tr>'), 
             'The number of interview rows in the email should match the number of interviews tomorrow + 1 for header row.'
         );
         Assert.isTrue(resultEmail.toaddresses.contains(testUser.Id), 'Email is missing user in To: field');
-        Assert.isTrue(resultEmail.getSubject().contains('Interview Events Tomorrow:'), 'Expect email subject to contain text: "Interview Events Tomorrow:"');
+        Assert.isTrue(resultEmail.getSubject().contains('Interview Events Upcoming'), 'Expect email subject to contain text: "Interview Events Upcoming"');
     }
     @isTest
     private static void generateEventTable_Test() {
@@ -154,7 +157,7 @@ private class UpcomingInterviewEmail_Schedule_Test {
         Test.stopTest();
 
         Assert.areEqual(
-            NUMBER_OF_TEST_INTERVIEWS_TOMORROW + HEADER_ROW, 
+            NUMBER_OF_TEST_INTERVIEWS_UPCOMING + HEADER_ROW, 
             eventTable.countMatches('<tr>'), 
             'The number of interview rows in the email should match the number of interviews tomorrow + 1 for header row.'
         );
@@ -170,7 +173,7 @@ private class UpcomingInterviewEmail_Schedule_Test {
         Map<Id, List<Event>> resultsMap = UpcomingInterviewEmail_Schedule.generateMapOfOwnerIdsToInterviews(events);
         Test.stopTest();
 
-        Assert.areEqual(NUMBER_OF_TEST_INTERVIEWS_TOMORROW, resultsMap.get((Id)testUser.Id).size(), 'expected events to be associated with the user that matched test constant');
+        Assert.areEqual(NUMBER_OF_TEST_INTERVIEWS_UPCOMING, resultsMap.get((Id)testUser.Id).size(), 'expected events to be associated with the user that matched test constant');
     }
 
     @TestSetup
@@ -191,11 +194,11 @@ private class UpcomingInterviewEmail_Schedule_Test {
         insert testUser;
 
         List<Event> events = new List<Event>();
-        for (Integer i = 0; i < NUMBER_OF_TEST_INTERVIEWS_TOMORROW; i++) {
+        for (Integer i = 0; i < NUMBER_OF_TEST_INTERVIEWS_UPCOMING; i++) {
             Event newEvent = new Event(
                 Subject = 'Test Interview ' + i,
-                StartDateTime = DateTime.now().addDays(1),
-                EndDateTime = Datetime.now().addDays(1).addMinutes(30),
+                StartDateTime = DateTime.now().addDays(LOOK_AHEAD_NEXT_N_DAYS),
+                EndDateTime = Datetime.now().addDays(LOOK_AHEAD_NEXT_N_DAYS).addMinutes(30),
                 Location = 'Online',
                 OwnerId = testUser.Id,
                 RecordTypeId = INTERVIEW_EVENT_RECORDTYPE_ID
@@ -204,15 +207,15 @@ private class UpcomingInterviewEmail_Schedule_Test {
         }
         insert events;
     }
-@isTest
+    @isTest
     private static void testSendDailyInterviewEmailReminders() {
 
         Test.startTest();
-        UpcomingInterviewEmail_Schedule.sendDailyInterviewEmailReminders();
+        UpcomingInterviewEmail_Schedule.sendDailyInterviewEmailReminders(LOOK_AHEAD_NEXT_N_DAYS);
         Test.stopTest();
 
         List<EmailMessage> sentEmails = [SELECT Subject, ToAddress, HtmlBody FROM EmailMessage WITH USER_MODE];
         System.assertEquals(1, sentEmails.size(), 'Expected 1 email to be sent');
-        System.assertEquals('1 upcoming interview tomorrow', sentEmails[0].Subject, 'Email subject is incorrect');
+        System.assertEquals('Interview Events Upcoming', sentEmails[0].Subject, 'Email subject is incorrect');
     }
 }
