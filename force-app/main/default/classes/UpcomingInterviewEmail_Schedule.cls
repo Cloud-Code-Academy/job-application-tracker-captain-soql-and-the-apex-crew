@@ -1,6 +1,39 @@
+
 public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable {
     public void execute(SchedulableContext ctx) {
-        // query for interview events with a start date tomorrow
+        sendDailyInterviewEmailReminders();
+        // // query for interview events with a start date tomorrow
+        // List<Event> interviewsTomorrow = [
+        //     SELECT 
+        //         Id,
+        //         Location,
+        //         OwnerId, 
+        //         StartDateTime,
+        //         Subject
+        //     FROM Event 
+        //     WHERE 
+        //         RecordType.Name = 'Interview' 
+        //         AND StartDateTime = NEXT_N_DAYS:1
+        //     WITH SYSTEM_MODE
+        // ];
+
+        // if (!interviewsTomorrow.isEmpty()) {
+        //     Map<Id, List<Event>> ownerIdToListOfInterviewsTomorrowMap = generateMapOfOwnerIdsToInterviews(interviewsTomorrow);
+        //     List<Messaging.SingleEmailMessage> emailsToSendOut = new List<Messaging.SingleEmailMessage>();
+        //     for (Id ownerId : ownerIdToListOfInterviewsTomorrowMap.keySet()) {
+        //         Messaging.SingleEmailMessage emailToSend = generateEmail(ownerId, ownerIdToListOfInterviewsTomorrowMap.get(ownerId));
+        //         emailsToSendOut.add(emailToSend);
+        //     }
+        //     try {
+        //         Messaging.sendEmail(emailsToSendOut);
+        //     } catch (Exception ex) {
+        //         System.debug('Error sending email: ' + ex.getMessage());
+        //     } 
+        // }
+
+    }
+    @TestVisible
+    private static void sendDailyInterviewEmailReminders() {
         List<Event> interviewsTomorrow = [
             SELECT 
                 Id,
@@ -12,9 +45,9 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
             WHERE 
                 RecordType.Name = 'Interview' 
                 AND StartDateTime = NEXT_N_DAYS:1
+            WITH SYSTEM_MODE
         ];
 
-        // if the query returns results, map the ownerId to a list of events, generate emails of all events for each ownerId and add to a list of emails to send out
         if (!interviewsTomorrow.isEmpty()) {
             Map<Id, List<Event>> ownerIdToListOfInterviewsTomorrowMap = generateMapOfOwnerIdsToInterviews(interviewsTomorrow);
             List<Messaging.SingleEmailMessage> emailsToSendOut = new List<Messaging.SingleEmailMessage>();

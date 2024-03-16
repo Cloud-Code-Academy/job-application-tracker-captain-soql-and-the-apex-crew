@@ -71,34 +71,34 @@ private class UpcomingInterviewEmail_Schedule_Test {
     //     Assert.areEqual(tomorrow6AMDateTime, jobEmailReminderId.NextFireTime, 'Expected next fire time to be tomorrow at 6am');
     // }
 
-    @isTest 
-    private static List<User> generateUserTestData() {
-        Id standardProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id;
-        final Integer NUM_USERS_TO_CREATE = 51;
+    // @isTest 
+    // private static List<User> generateUserTestData() {
+    //     Id standardProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id;
+    //     final Integer NUM_USERS_TO_CREATE = 51;
         
-        List<User> users = new List<User>();
-        String uniqueString = String.valueOf(DateTime.now().getTime());
-        List<User> testUsers = new List<User>();
-        for(Integer i = 0; i < NUM_USERS_TO_CREATE; i++) {
-            User user = new User(
-                LastName = 'TestUser' + i,
-                FirstName = 'FirstName' + i,
-                Email = 'testuser' + i + uniqueString + '@example.com',
-                Username = 'testuser' + i + uniqueString + '@example.com',
-                Alias = 'TUser' + i,
-                ProfileId = standardProfileId,
-                TimeZoneSidKey = 'America/Los_Angeles',
-                LocaleSidKey = 'en_US',
-                EmailEncodingKey = 'UTF-8',
-                LanguageLocaleKey = 'en_US',
-                IsActive = true
-            );
-            testUsers.add(user);
-        }
+    //     List<User> users = new List<User>();
+    //     String uniqueString = String.valueOf(DateTime.now().getTime());
+    //     List<User> testUsers = new List<User>();
+    //     for(Integer i = 0; i < NUM_USERS_TO_CREATE; i++) {
+    //         User user = new User(
+    //             LastName = 'TestUser' + i,
+    //             FirstName = 'FirstName' + i,
+    //             Email = 'testuser' + i + uniqueString + '@example.com',
+    //             Username = 'testuser' + i + uniqueString + '@example.com',
+    //             Alias = 'TUser' + i,
+    //             ProfileId = standardProfileId,
+    //             TimeZoneSidKey = 'America/Los_Angeles',
+    //             LocaleSidKey = 'en_US',
+    //             EmailEncodingKey = 'UTF-8',
+    //             LanguageLocaleKey = 'en_US',
+    //             IsActive = true
+    //         );
+    //         testUsers.add(user);
+    //     }
         
-        insert testUsers;
-        return testUsers;
-    }
+    //     insert testUsers;
+    //     return testUsers;
+    // }
     // @isTest 
     // private static List<Event> generateInterviewsFromUserIdTestData(List<Id> testUserIds) {
     //     List<Event> events = new List<Event>();
@@ -203,5 +203,16 @@ private class UpcomingInterviewEmail_Schedule_Test {
             events.add(newEvent);
         }
         insert events;
+    }
+@isTest
+    private static void testSendDailyInterviewEmailReminders() {
+
+        Test.startTest();
+        UpcomingInterviewEmail_Schedule.sendDailyInterviewEmailReminders();
+        Test.stopTest();
+
+        List<EmailMessage> sentEmails = [SELECT Subject, ToAddress, HtmlBody FROM EmailMessage WITH USER_MODE];
+        System.assertEquals(1, sentEmails.size(), 'Expected 1 email to be sent');
+        System.assertEquals('1 upcoming interview tomorrow', sentEmails[0].Subject, 'Email subject is incorrect');
     }
 }
