@@ -1,18 +1,18 @@
 public with sharing class EventTriggerHandler {
     public static void preventOverlappingFutureEventsForAssignedUser(List<Event> triggerDotNew) {
         Map<Id, List<Event>> ownerAssignedIdToEvents = createAssignedIdToEventListMap(triggerDotNew);
-        for(Event ev: triggerDotNew){
-            if(isWeekend(ev.StartDateTime, ev.EndDateTime)){
-                ev.addError('This is your off day, stop working. Unlike the people who made this.');
+        for(Event newEvent: triggerDotNew){
+            if(isWeekend(newEvent.StartDateTime, newEvent.EndDateTime)){
+                newEvent.addError('This is your off day, stop working. Unlike the people who made this.');
             }
             DatesToCompare dates = new DatesToCompare();
-            dates.startDateTimeOne = ev.StartDateTime;
-            dates.endDateTimeOne = ev.EndDateTime;
-            for(Event eve: ownerAssignedIdToEvents.get(ev.OwnerId)){
-                dates.startDateTimeTwo = eve.StartDateTime;
-                dates.endDateTimeTwo = eve.EndDateTime;
+            dates.startDateTimeOne = newEvent.StartDateTime;
+            dates.endDateTimeOne = newEvent.EndDateTime;
+            for(Event existingEvent: ownerAssignedIdToEvents.get(newEvent.OwnerId)){
+                dates.startDateTimeTwo = existingEvent.StartDateTime;
+                dates.endDateTimeTwo = existingEvent.EndDateTime;
                 if(isOverlapping(dates)){
-                    ev.addError('You have another scheduled event at this time.');
+                    newEvent.addError('You have another scheduled event at this time.');
                 }
             }
         }
@@ -28,8 +28,8 @@ public with sharing class EventTriggerHandler {
     }
     private static Map<Id, List<Event>> createAssignedIdToEventListMap(List<Event> eventsToMap){
         Map<Id, List<Event>> assignedIdToEvents = new Map<Id, List<Event>>();
-        for(Event ev: eventsToMap){
-            assignedIdToEvents.put(ev.OwnerId, new List<Event>());
+        for(Event newEvent: eventsToMap){
+            assignedIdToEvents.put(newEvent.OwnerId, new List<Event>());
         }
         Datetime now = datetime.now();
         List<Event> eventsOwnedByUsers = [
@@ -39,10 +39,10 @@ public with sharing class EventTriggerHandler {
             AND StartDateTime >= :now
             WITH USER_MODE
         ];
-        for(Event ev: eventsOwnedByUsers){
-            List<Event> eventList = assignedIdToEvents.get(ev.OwnerId);
-            eventList.add(ev);
-            assignedIdToEvents.put(ev.OwnerId, eventList);
+        for(Event newEvent: eventsOwnedByUsers){
+            List<Event> eventList = assignedIdToEvents.get(newEvent.OwnerId);
+            eventList.add(newEvent);
+            assignedIdToEvents.put(newEvent.OwnerId, eventList);
         }
         return assignedIdToEvents;
     }
