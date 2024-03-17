@@ -16,12 +16,9 @@ public with sharing class JoobleIntegration {
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json');
 
-            String sevenDaysAgo = Date.today().addDays(-7).format('yyyy-MM-dd');
-
             Map<String,Object> requestBodyMap = new Map<String, Object>{
                 'keywords' => keywords,
-                'location' => location,
-                'datecreatedfrom' => sevenDaysAgo
+                'location' => location
             };
 
             System.debug('RequestBodyMap: '+ JSON.serializePretty(requestBodyMap));
@@ -43,7 +40,7 @@ public with sharing class JoobleIntegration {
                     //TODO Search for and Create Account?Update Account
                     //TODO Create and/or Update Job Posted
                     //TODO ExternalID fields
-                                  
+
                 }
             }catch(Exception e){
                 System.debug('Exception is: ' + e.getMessage());
@@ -57,17 +54,57 @@ public with sharing class JoobleIntegration {
     private static void processResponse(List<Posting> postings){
         // create look up account, job posting
     }*/
-    class Posting{
-        String title;
-        String postingId;
-        String location;
-        String snippet;
-        String salary;
-        String source;
-        String type;
-        Datetime updated;
-        String companyName;
-        String URL__ahhahahah_weblink;
+    @TestVisible
+    private static List<JoobleIntegration.Posting> parseResponseBodyIntoPostingInnerClass(String responseBody) {
+        Map<String, Object> jsonResponseBody = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
+        List<Object> jobPostsList = (List<Object>) jsonResponseBody.get('jobs');
+
+        List<Posting> postings = new List<Posting>();
+        for (Object jobPost : jobPostsList) {
+            Map<String, Object> jobPostRecord = (Map<String, Object>) jobPost;
+            Posting newJobPost = new Posting();
+            newJobPost.companyName = String.valueOf(jobPostRecord.get('company'));
+            newJobPost.title = String.valueOf(jobPostRecord.get('title'));
+            newJobPost.postingId = String.valueOf(jobPostRecord.get('id'));
+            newJobPost.location = String.valueOf(jobPostRecord.get('location'));
+            newJobPost.snippet = String.valueOf(jobPostRecord.get('snippet'));
+            newJobPost.salary = String.valueOf(jobPostRecord.get('salary'));
+            newJobPost.source = String.valueOf(jobPostRecord.get('source'));
+            newJobPost.type = String.valueOf(jobPostRecord.get('type'));
+            newJobPost.updated = convertJsonTimeToDatetime(String.valueOf(jobPostRecord.get('updated')));
+            newJobPost.link = String.valueOf(jobPostRecord.get('link'));
+            postings.add(newJobPost);
+        }
+        return postings;
     }
-        
+
+    @TestVisible
+    class Posting{
+        @TestVisible String companyName;
+        @TestVisible String title;
+        @TestVisible String postingId;
+        @TestVisible String location;
+        @TestVisible String snippet;
+        @TestVisible String salary;
+        @TestVisible String source;
+        @TestVisible String type;
+        @TestVisible Date updated;
+        @TestVisible String link;
+    }
+
+    @TestVisible
+    private static Date convertJsonTimeToDatetime(String jsonTimeString) {
+        if (String.isBlank(jsonTimeString)) {
+            return null;
+        }
+
+        List<String> dateComponents = jsonTimeString.split('-');
+
+        Integer year = Integer.valueOf(dateComponents[0]);
+        Integer month = Integer.valueOf(dateComponents[1]);
+        Integer day = Integer.valueOf(dateComponents[2].left(2));
+
+        Date dateValue = Date.newInstance(year, month, day);
+        return dateValue;
+    }
 }
