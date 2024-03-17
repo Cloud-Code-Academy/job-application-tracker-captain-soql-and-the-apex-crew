@@ -54,7 +54,20 @@ public with sharing class JoobleIntegration {
     private static HttpResponse makeHTTPRequest(){
 
     }
-    private static void processResponse(){
-
+    private static void processResponse(List<Posting> postings){
+        // create look up account, job posting
     }*/
+    class Posting{
+        String title;
+        String postingId;
+        String location;
+        String snippet;
+        String salary;
+        String source;
+        String type;
+        Datetime updated;
+        String companyName;
+        String URL__ahhahahah_weblink;
+    }
+        
 }
