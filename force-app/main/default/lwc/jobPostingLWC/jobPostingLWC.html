@@ -1,0 +1,23 @@
+<template>
+    <div class="slds-text-heading_large" style = "padding-top: 42px; padding-bottom: 29px;">
+        {label.JOBPOSTINGLWC_PAGE_HEADER}
+    </div>
+    <div if:true={callout.data}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <th>{label.JOB_POST_ID}</th>
+				<th>{label.COMPANY_NAME}</th>
+                <th>{label.UPDATED}</th>
+            </thead>
+            <tbody>
+                <template for:each={callout.data} for:item="item">
+                    <tr key ={item.id}>
+                        <td>{item.JobPostId}</td>
+                        <td>{item.CompanyName}</td>
+                        <td>{item.Updated}</td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</template>
