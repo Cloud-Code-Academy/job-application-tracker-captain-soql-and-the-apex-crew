@@ -31,6 +31,8 @@ public with sharing class JoobleIntegration_Test {
 
         Assert.areEqual('Prospect Infosystem Inc', postings.get(0).companyName, 'expected first job posting company to be "Prospect Infosystem Inc"');
         Assert.areEqual(Date.newInstance(2024, 2, 28), postings.get(0).updated, 'expected first posting update to be "2024-02-28"');
+
+        Assert.areEqual(20, postings.size(), 'expected 20 files from static resource to be added to list');
     }
 
     @isTest 
