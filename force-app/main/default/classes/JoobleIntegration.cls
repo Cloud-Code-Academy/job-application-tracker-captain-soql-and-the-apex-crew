@@ -16,10 +16,14 @@ public with sharing class JoobleIntegration {
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json');
 
+            String sevenDaysAgo = Date.today().addDays(-7).format('yyyy-MM-dd');
+
             Map<String,Object> requestBodyMap = new Map<String, Object>{
                 'keywords' => keywords,
-                'location' => location
+                'location' => location,
+                'datecreatedfrom' => sevenDaysAgo
             };
+
             System.debug('RequestBodyMap: '+ JSON.serializePretty(requestBodyMap));
             String requestBodyJSON = JSON.serialize(requestBodyMap);
             request.setBody(requestBodyJSON);
@@ -35,18 +39,11 @@ public with sharing class JoobleIntegration {
                     System.debug('Response was not 200 it was :' + response.getStatusCode());
                 }else{
                     System.debug('responseMap is: ' + responseMap);
-                                    
-                    // return.jobs = [{}]
-                    // title - job posting
-                    // location
-                    // snippet
-                    // salary
-                    // source
-                    // type
-                    // link
-                    // company -  account
-                    // upadated
-                    // id
+                    //TODO parse response
+                    //TODO Search for and Create Account?Update Account
+                    //TODO Create and/or Update Job Posted
+                    //TODO ExternalID fields
+                                  
                 }
             }catch(Exception e){
                 System.debug('Exception is: ' + e.getMessage());
