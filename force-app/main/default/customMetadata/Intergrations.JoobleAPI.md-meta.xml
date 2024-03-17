@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Jooble API</label>
+    <protected>false</protected>
+    <values>
+        <field>APIKey__c</field>
+        <value xsi:type="xsd:string">36a9b92c-6389-4ef6-9b21-5c0ebe93fffa</value>
+    </values>
+    <values>
+        <field>Endpoint__c</field>
+        <value xsi:type="xsd:string">https://jooble.org/api/</value>
+    </values>
+</CustomMetadata>
