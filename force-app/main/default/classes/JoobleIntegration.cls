@@ -20,8 +20,6 @@ public with sharing class JoobleIntegration {
                 'keywords' => keywords,
                 'location' => location
             };
-
-            System.debug('RequestBodyMap: '+ JSON.serializePretty(requestBodyMap));
             String requestBodyJSON = JSON.serialize(requestBodyMap);
             request.setBody(requestBodyJSON);
 
@@ -35,12 +33,8 @@ public with sharing class JoobleIntegration {
                 if(response.getStatusCode() != 200){
                     System.debug('Response was not 200 it was :' + response.getStatusCode());
                 }else{
-                    System.debug('responseMap is: ' + responseMap);
-                    //TODO parse response
-                    //TODO Search for and Create Account?Update Account
-                    //TODO Create and/or Update Job Posted
-                    //TODO ExternalID fields
-
+                    List<Posting> postList = parseResponseBodyIntoPostingInnerClass(responseBody);
+                    processResponse(postList);
                 }
             }catch(Exception e){
                 System.debug('Exception is: ' + e.getMessage());
@@ -105,8 +99,13 @@ public with sharing class JoobleIntegration {
                 postingsToUpsert.add(newJobPost);
             }
         }
-        upsert as system accountNameToAccount.values();
-        upsert as system postingsToUpsert;
+        try{
+            upsert as system accountNameToAccount.values();
+            upsert as system postingsToUpsert;
+        }catch(Exception e){
+            System.debug('Exception is :' + e.getMessage());
+            System.debug('Cause is: ' + e.getCause());
+        }
         
     }
     @TestVisible
