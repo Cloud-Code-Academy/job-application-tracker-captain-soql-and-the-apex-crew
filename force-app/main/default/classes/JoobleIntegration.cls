@@ -93,7 +93,6 @@ public with sharing class JoobleIntegration {
                         Name = post.companyName
                     );
                     accountNameToAccount.put(newAcc.Name , newAcc);
-                    newJobPost.CompanyRef__c = newAcc.Id;
                 }
                 postingsToUpsert.add(newJobPost);
             }
