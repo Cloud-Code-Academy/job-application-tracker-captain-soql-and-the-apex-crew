@@ -55,7 +55,7 @@ public with sharing class JoobleIntegration {
         // create look up account, job posting
         Map<String, Account> accountNameToAccount = new Map<String, Account>();
         List<String> acccountNames = new List<String>();
-        //List<JobPosting__c> postingsToUpsert = new List<JobPosting__c>();
+        List<JobPosting__c> postingsToUpsert = new List<JobPosting__c>();
         Map<String, Posting> externalIdToPosting = new Map<String, Posting>();
         Map<String, JobPosting__c> externalIdToJobPosting = new Map<String, JobPosting__c>();
         for(Posting post: postings){
@@ -66,16 +66,47 @@ public with sharing class JoobleIntegration {
             accountNameToAccount.put(acc.Name, acc);
         }
         for(JobPosting__c jobPost: [
-            SELECT CompanyRef__c, JooblePostingId__c, Name, Link__c, Location__c, Salary__c, Snippet__c, Source__c, Type__c, Updated__c 
+            SELECT CompanyRef__c, JooblePostingId__c, Name, Link__c, Location__c, Salary__c, Snippet__c, Source__c, Type__c, Updated__c , Id
             FROM JobPosting__c 
             WHERE JooblePostingId__c IN:externalIdToPosting.keySet()]){
-                
+                externalIdToJobPosting.put(jobPost.JooblePostingId__c, jobPost);
             }
         for(Posting post: postings){
-            JobPosting__c jobPost = new JobPosting__c(
-
-            )
+            JobPosting__c jobPost = externalIdToJobPosting.get(post.postingId);
+            if(jobPost != null){
+                jobPost.Name = post.title;
+                jobPost.Link__c = post.link;
+                jobPost.Location__c = post.location;
+                jobPost.Salary__c = post.salary;
+                jobPost.Snippet__c = post.snippet;
+                jobPost.Type__c = post.type;
+                jobPost.Updated__c = post.updated;
+                postingsToUpsert.add(jobPost);
+            }else{
+                JobPosting__c newJobPost = new JobPosting__c(
+                    Name = post.title,
+                    Link__c = post.link,
+                    Location__c = post.location,
+                    Salary__c = post.salary,
+                    Snippet__c = post.snippet,
+                    Type__c = post.type,
+                    Updated__c = post.updated
+                );
+                Account acc = accountNameToAccount.get(post.companyName);
+                if(acc != null){
+                    newJobPost.CompanyRef__c = acc.Id;
+                }else{
+                    Account newAcc = new Account(
+                        Name = post.companyName
+                    );
+                    accountNameToAccount.put(newAcc.Name , newAcc);
+                    newJobPost.CompanyRef__c = newAcc.Id;
+                }
+                postingsToUpsert.add(newJobPost);
+            }
         }
+        upsert as system accountNameToAccount.values();
+        upsert as system postingsToUpsert;
         
     }
     @TestVisible
