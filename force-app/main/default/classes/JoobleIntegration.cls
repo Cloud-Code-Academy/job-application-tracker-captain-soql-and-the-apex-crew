@@ -50,10 +50,34 @@ public with sharing class JoobleIntegration {
     /*
     private static HttpResponse makeHTTPRequest(){
 
-    }
+    }*/
     private static void processResponse(List<Posting> postings){
         // create look up account, job posting
-    }*/
+        Map<String, Account> accountNameToAccount = new Map<String, Account>();
+        List<String> acccountNames = new List<String>();
+        //List<JobPosting__c> postingsToUpsert = new List<JobPosting__c>();
+        Map<String, Posting> externalIdToPosting = new Map<String, Posting>();
+        Map<String, JobPosting__c> externalIdToJobPosting = new Map<String, JobPosting__c>();
+        for(Posting post: postings){
+            acccountNames.add(post.companyName);
+            externalIdToPosting.put(post.postingId, post);
+        }
+        for(Account acc: [SELECT Id, Name FROM Account WHERE Name IN :acccountNames]){
+            accountNameToAccount.put(acc.Name, acc);
+        }
+        for(JobPosting__c jobPost: [
+            SELECT CompanyRef__c, JooblePostingId__c, Name, Link__c, Location__c, Salary__c, Snippet__c, Source__c, Type__c, Updated__c 
+            FROM JobPosting__c 
+            WHERE JooblePostingId__c IN:externalIdToPosting.keySet()]){
+                
+            }
+        for(Posting post: postings){
+            JobPosting__c jobPost = new JobPosting__c(
+
+            )
+        }
+        
+    }
     @TestVisible
     private static List<JoobleIntegration.Posting> parseResponseBodyIntoPostingInnerClass(String responseBody) {
         Map<String, Object> jsonResponseBody = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
