@@ -36,21 +36,21 @@ public with sharing class JoobleIntegration_Test {
     }
 
     @isTest 
-    static void convertJsonTimeToDatetime_Test_ShouldConvert() {
+    static void convertJsonTimeToDate_Test_ShouldConvert() {
         string jsonTime = '2024-03-11T00:00:00.0000000';
 
         Test.startTest();
-        Date dtConversionAttempt = JoobleIntegration.convertJsonTimeToDatetime(jsonTime);
+        Date dtConversionAttempt = JoobleIntegration.convertJsonTimeToDate(jsonTime);
         Test.stopTest();
 
         Assert.areEqual(Date.newInstance(2024, 3, 11), dtConversionAttempt, 'Expected conversion to be "2024-03-11"' + ' but is ' + dtConversionAttempt);
     }
     @isTest 
-    static void convertJsonTimeToDatetime_Test_ShouldReturnNull() {
+    static void convertJsonTimeToDate_Test_ShouldReturnNull() {
         string jsonTime = '';
 
         Test.startTest();
-        Date dtConversionAttempt = JoobleIntegration.convertJsonTimeToDatetime(jsonTime);
+        Date dtConversionAttempt = JoobleIntegration.convertJsonTimeToDate(jsonTime);
         Test.stopTest();
 
         Assert.isNull(dtConversionAttempt, 'expected empty time to return null');
