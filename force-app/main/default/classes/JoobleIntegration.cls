@@ -84,7 +84,8 @@ public with sharing class JoobleIntegration {
                     Salary__c = post.salary,
                     Snippet__c = post.snippet,
                     Type__c = post.type,
-                    Updated__c = post.updated
+                    Updated__c = post.updated,
+                    JooblePostingId__c = post.postingId
                 );
                 Account acc = accountNameToAccount.get(post.companyName);
                 if(acc != null){
@@ -101,7 +102,7 @@ public with sharing class JoobleIntegration {
         }
         try{
             upsert as system accountNameToAccount.values();
-            upsert as system postingsToUpsert;
+            upsert as system postingsToUpsert JooblePostingId__c;
         }catch(Exception e){
             System.debug('Exception is :' + e.getMessage());
             System.debug('Cause is: ' + e.getCause());
