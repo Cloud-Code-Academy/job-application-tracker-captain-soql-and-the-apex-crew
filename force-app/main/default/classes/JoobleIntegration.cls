@@ -11,7 +11,6 @@ public with sharing class JoobleIntegration {
         Intergrations__mdt jooble = Intergrations__mdt.getInstance('JoobleAPI');
         if(jooble != null && jooble.APIKey__c != null && jooble.Endpoint__c != null){
             HttpRequest request = new HttpRequest();
-            system.debug('Intergrations endpoint is: ' + jooble.Endpoint__c);
             request.setEndpoint(jooble.Endpoint__c + jooble.APIKey__c);
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json');
@@ -46,7 +45,6 @@ public with sharing class JoobleIntegration {
 
     }*/
     private static void processResponse(List<Posting> postings){
-        // create look up account, job posting
         Map<String, Account> accountNameToAccount = new Map<String, Account>();
         List<String> acccountNames = new List<String>();
         List<JobPosting__c> postingsToUpsert = new List<JobPosting__c>();
@@ -102,6 +100,11 @@ public with sharing class JoobleIntegration {
         }
         try{
             upsert as system accountNameToAccount.values();
+            for(JobPosting__c jobPost: postingsToUpsert){
+                if(jobPost.CompanyRef__c == null){
+                    jobPost.CompanyRef__c = accountNameToAccount.get(externalIdToPosting.get(jobPost.JooblePostingId__c).companyName).Id;
+                }
+            }
             upsert as system postingsToUpsert JooblePostingId__c;
         }catch(Exception e){
             System.debug('Exception is :' + e.getMessage());
