@@ -128,7 +128,7 @@ public with sharing class JoobleIntegration {
             newJobPost.salary = String.valueOf(jobPostRecord.get('salary'));
             newJobPost.source = String.valueOf(jobPostRecord.get('source'));
             newJobPost.type = String.valueOf(jobPostRecord.get('type'));
-            newJobPost.updated = convertJsonTimeToDatetime(String.valueOf(jobPostRecord.get('updated')));
+            newJobPost.updated = convertJsonTimeToDate(String.valueOf(jobPostRecord.get('updated')));
             newJobPost.link = String.valueOf(jobPostRecord.get('link'));
             postings.add(newJobPost);
         }
@@ -150,7 +150,7 @@ public with sharing class JoobleIntegration {
     }
 
     @TestVisible
-    private static Date convertJsonTimeToDatetime(String jsonTimeString) {
+    private static Date convertJsonTimeToDate(String jsonTimeString) {
         if (String.isBlank(jsonTimeString)) {
             return null;
         }
