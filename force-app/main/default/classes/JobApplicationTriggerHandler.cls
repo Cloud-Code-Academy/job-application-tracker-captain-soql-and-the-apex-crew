@@ -1,11 +1,3 @@
-/**
- * @description       : Operations on the JobApplication Object
- * @author            : @Oizon, @off-nadir-insight, @Fritzb100
- * @group             : Cohort2
- * @last modified on  : 03-16-2024
- * @last modified by  : @Fritz
-**/
-
 public with sharing class JobApplicationTriggerHandler {
 
     private static final double MEDICARE_TAX_RATE = 0.0620;
