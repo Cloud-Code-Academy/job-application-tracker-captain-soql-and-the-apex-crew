@@ -18,7 +18,8 @@ public with sharing class JoobleIntegration {
 
             Map<String,Object> requestBodyMap = new Map<String, Object>{
                 'keywords' => keywords,
-                'location' => location
+                'location' => location,
+                'resultonpage' => 100
             };
 
             System.debug('RequestBodyMap: '+ JSON.serializePretty(requestBodyMap));
