@@ -11,4 +11,18 @@ global class jobPostCallout {
         return jsonData;
     }
 
+    @AuraEnabled
+    public static string searchJobPostings(){
+
+    }
+
+    @AuraEnabled
+    public static string convertPostingToApplication(){
+        try {
+            
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
 }
