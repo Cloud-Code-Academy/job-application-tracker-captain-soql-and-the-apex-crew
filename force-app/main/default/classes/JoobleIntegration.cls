@@ -19,7 +19,8 @@ public with sharing class JoobleIntegration {
             Map<String,Object> requestBodyMap = new Map<String, Object>{
                 'keywords' => keywords,
                 'location' => location,
-                'resultonpage' => 100
+                'resultonpage' => 100,
+                'datecreatedfrom' => Date.today().addDays(-7)
             };
 
             System.debug('RequestBodyMap: '+ JSON.serializePretty(requestBodyMap));
