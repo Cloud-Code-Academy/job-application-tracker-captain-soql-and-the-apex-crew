@@ -1,9 +1,23 @@
 <template>
-    <div style="height: 300px;">
-        <lightning-datatable
+    <lightning-card title="Job Postings from Jooble">
+        <div slot="actions">
+            <lightning-button label="Generate Applications" onclick={convertPostingToApplication}></lightning-button>
+            <lightning-button label="Clear List" onclick={clearAll}></lightning-button>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <p>Selected postings: {selectedJobPostingsLength}</p>
+            <div class="slds-grid slds-gutters slds-p-bottom_x-small slds-p-left_x-small">
+                <lightning-input type="search" onchange={handleSearch} placeholder="work in progress..."></lightning-input>
+            </div>
+            <lightning-datatable
                 key-field="id"
                 data={data}
-                columns={columns}>
-        </lightning-datatable>
-    </div>
+                columns={columns}
+                onrowselection={handleRowSelection}
+                onrowaction={handleRowAction}
+            >
+            </lightning-datatable>
+        </div>
+    </lightning-card>
+
 </template>
