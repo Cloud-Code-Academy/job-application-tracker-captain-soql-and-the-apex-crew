@@ -11,7 +11,6 @@ public with sharing class JoobleIntegration {
         Intergrations__mdt jooble = Intergrations__mdt.getInstance('JoobleAPI');
         if(jooble != null && jooble.APIKey__c != null && jooble.Endpoint__c != null){
             HttpRequest request = new HttpRequest();
-            system.debug('Intergrations endpoint is: ' + jooble.Endpoint__c);
             request.setEndpoint(jooble.Endpoint__c + jooble.APIKey__c);
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json');
@@ -20,8 +19,6 @@ public with sharing class JoobleIntegration {
                 'keywords' => keywords,
                 'location' => location
             };
-
-            System.debug('RequestBodyMap: '+ JSON.serializePretty(requestBodyMap));
             String requestBodyJSON = JSON.serialize(requestBodyMap);
             request.setBody(requestBodyJSON);
 
@@ -35,12 +32,8 @@ public with sharing class JoobleIntegration {
                 if(response.getStatusCode() != 200){
                     System.debug('Response was not 200 it was :' + response.getStatusCode());
                 }else{
-                    System.debug('responseMap is: ' + responseMap);
-                    //TODO parse response
-                    //TODO Search for and Create Account?Update Account
-                    //TODO Create and/or Update Job Posted
-                    //TODO ExternalID fields
-
+                    List<Posting> postList = parseResponseBodyIntoPostingInnerClass(responseBody);
+                    processResponse(postList);
                 }
             }catch(Exception e){
                 System.debug('Exception is: ' + e.getMessage());
@@ -50,10 +43,74 @@ public with sharing class JoobleIntegration {
     /*
     private static HttpResponse makeHTTPRequest(){
 
-    }
-    private static void processResponse(List<Posting> postings){
-        // create look up account, job posting
     }*/
+    private static void processResponse(List<Posting> postings){
+        Map<String, Account> accountNameToAccount = new Map<String, Account>();
+        List<String> acccountNames = new List<String>();
+        List<JobPosting__c> postingsToUpsert = new List<JobPosting__c>();
+        Map<String, Posting> externalIdToPosting = new Map<String, Posting>();
+        Map<String, JobPosting__c> externalIdToJobPosting = new Map<String, JobPosting__c>();
+        for(Posting post: postings){
+            acccountNames.add(post.companyName);
+            externalIdToPosting.put(post.postingId, post);
+        }
+        for(Account acc: [SELECT Id, Name FROM Account WHERE Name IN :acccountNames]){
+            accountNameToAccount.put(acc.Name, acc);
+        }
+        for(JobPosting__c jobPost: [
+            SELECT CompanyRef__c, JooblePostingId__c, Name, Link__c, Location__c, Salary__c, Snippet__c, Source__c, Type__c, Updated__c , Id
+            FROM JobPosting__c 
+            WHERE JooblePostingId__c IN:externalIdToPosting.keySet()]){
+                externalIdToJobPosting.put(jobPost.JooblePostingId__c, jobPost);
+            }
+        for(Posting post: postings){
+            JobPosting__c jobPost = externalIdToJobPosting.get(post.postingId);
+            if(jobPost != null){
+                jobPost.Name = post.title;
+                jobPost.Link__c = post.link;
+                jobPost.Location__c = post.location;
+                jobPost.Salary__c = post.salary;
+                jobPost.Snippet__c = post.snippet;
+                jobPost.Type__c = post.type;
+                jobPost.Updated__c = post.updated;
+                postingsToUpsert.add(jobPost);
+            }else{
+                JobPosting__c newJobPost = new JobPosting__c(
+                    Name = post.title,
+                    Link__c = post.link,
+                    Location__c = post.location,
+                    Salary__c = post.salary,
+                    Snippet__c = post.snippet,
+                    Type__c = post.type,
+                    Updated__c = post.updated,
+                    JooblePostingId__c = post.postingId
+                );
+                Account acc = accountNameToAccount.get(post.companyName);
+                if(acc != null){
+                    newJobPost.CompanyRef__c = acc.Id;
+                }else{
+                    Account newAcc = new Account(
+                        Name = post.companyName
+                    );
+                    accountNameToAccount.put(newAcc.Name , newAcc);
+                }
+                postingsToUpsert.add(newJobPost);
+            }
+        }
+        try{
+            upsert as system accountNameToAccount.values();
+            for(JobPosting__c jobPost: postingsToUpsert){
+                if(jobPost.CompanyRef__c == null){
+                    jobPost.CompanyRef__c = accountNameToAccount.get(externalIdToPosting.get(jobPost.JooblePostingId__c).companyName).Id;
+                }
+            }
+            upsert as system postingsToUpsert JooblePostingId__c;
+        }catch(Exception e){
+            System.debug('Exception is :' + e.getMessage());
+            System.debug('Cause is: ' + e.getCause());
+        }
+        
+    }
     @TestVisible
     private static List<JoobleIntegration.Posting> parseResponseBodyIntoPostingInnerClass(String responseBody) {
         Map<String, Object> jsonResponseBody = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
@@ -71,7 +128,7 @@ public with sharing class JoobleIntegration {
             newJobPost.salary = String.valueOf(jobPostRecord.get('salary'));
             newJobPost.source = String.valueOf(jobPostRecord.get('source'));
             newJobPost.type = String.valueOf(jobPostRecord.get('type'));
-            newJobPost.updated = convertJsonTimeToDatetime(String.valueOf(jobPostRecord.get('updated')));
+            newJobPost.updated = convertJsonTimeToDate(String.valueOf(jobPostRecord.get('updated')));
             newJobPost.link = String.valueOf(jobPostRecord.get('link'));
             postings.add(newJobPost);
         }
@@ -93,7 +150,7 @@ public with sharing class JoobleIntegration {
     }
 
     @TestVisible
-    private static Date convertJsonTimeToDatetime(String jsonTimeString) {
+    private static Date convertJsonTimeToDate(String jsonTimeString) {
         if (String.isBlank(jsonTimeString)) {
             return null;
         }
