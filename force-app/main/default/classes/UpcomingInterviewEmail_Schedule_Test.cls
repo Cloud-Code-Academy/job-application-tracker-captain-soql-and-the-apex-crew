@@ -1,6 +1,7 @@
 @isTest
 private class UpcomingInterviewEmail_Schedule_Test {
     private static final Integer NUMBER_OF_TEST_INTERVIEWS_UPCOMING = 5;
+    private static final Integer NUM_USERS_TO_CREATE = 3;
     private static final Id INTERVIEW_EVENT_RECORDTYPE_ID = [
         SELECT Id, Name 
         FROM RecordType 
@@ -15,7 +16,6 @@ private class UpcomingInterviewEmail_Schedule_Test {
     @TestSetup
     static void makeData(){
         // generate users, to attach jobs to
-        final Integer NUM_USERS_TO_CREATE = 3;
         Profile standardUserProfile = [SELECT Id FROM Profile WHERE Name='Standard User' LIMIT 1]; 
         String uniqueString = String.valueOf(DateTime.now().getTime());
         List<User> testUsers = new List<User>();
@@ -133,18 +133,18 @@ private class UpcomingInterviewEmail_Schedule_Test {
         Assert.areEqual(NUMBER_OF_TEST_INTERVIEWS_UPCOMING, resultsMap.get((Id)testUser.Id).size(), 'expected events to be associated with the user that matched test constant');
     }
 
-    // @isTest
-    // private static void testSendDailyInterviewEmailReminders() {
-    //     Test.startTest();
+    @isTest
+    private static void sendDailyInterviewEmailReminders_Test() {
+        
+        Test.startTest();
+        UpcomingInterviewEmail_Schedule.sendDailyInterviewEmailReminders(NUMBER_OF_TEST_INTERVIEWS_UPCOMING);
+        Assert.areEqual(1, Limits.getEmailInvocations(), 'expected a single instance to be created');
+        Test.stopTest();
 
-    //     Assert.areEqual(1, Limits.getEmailInvocations(), 'expected a single instance to be created');
-    //     Test.stopTest();
+        List<EmailMessage> sentEmails = [SELECT Subject, ToAddress, HtmlBody FROM EmailMessage WITH USER_MODE];
+        System.assertEquals(NUM_USERS_TO_CREATE, sentEmails.size(), 'Expected 1 email to be sent');
+    }
 
-    //     // List<EmailMessage> sentEmails = [SELECT Subject, ToAddress, HtmlBody FROM EmailMessage WITH USER_MODE];
-    //     // System.assertEquals(1, sentEmails.size(), 'Expected 1 email to be sent');
-    //     // System.assertEquals('Interview Events Upcoming', sentEmails[0].Subject, 'Email subject is incorrect');
-    // }
-    
     @isTest
     static void scheduleExecute_Test_shouldSchedule() {
         Test.startTest();
