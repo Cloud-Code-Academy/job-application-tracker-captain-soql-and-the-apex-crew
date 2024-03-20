@@ -23,11 +23,8 @@ public with sharing class JoobleIntegration_Test {
         JoobleIntegration.makeHTTPCallout(keywords, location);
         test.stopTest();
 
-        List<Account> actualAccounts = [SELECT Name FROM Account WHERE Name = 'Apex Informatics'];
-        List<JobPosting__c> actualJobPostings = [SELECT Name, Location__c, Salary__c FROM JobPosting__c WHERE Name = 'Salesforce Developer'];
-        
-        System.debug(actualAccounts);    
-        System.debug(actualJobPostings);  
+        List<Account> actualAccounts = [SELECT Name FROM Account];
+        List<JobPosting__c> actualJobPostings = [SELECT Name, Location__c, Salary__c FROM JobPosting__c];
         
         // System.assertEquals(1, actualJobPostings.size(), 'Expected one JobPosting__c record');
         // System.assertEquals('Salesforce Developer', actualJobPostings[0].Name, 'JobPosting__c name does not match');

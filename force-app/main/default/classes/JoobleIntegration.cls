@@ -28,12 +28,20 @@ public with sharing class JoobleIntegration {
             try{
                 response = http.send(request);
                 String responseBody = response.getBody();
+                System.debug('Response Body is: ' + responseBody);
                 Map<String, Object> responseMap = (Map<String, Object>)JSON.deserializeUntyped(responseBody);
-
+                //System.debug('responseMap '  + responseMap);
+                System.debug('getStatusCode: ' +response.getStatusCode());
                 if(response.getStatusCode() != 200){
                     System.debug('Response was not 200 it was :' + response.getStatusCode());
                 }else{
+                    System.debug('Response was 200');
+                    // System.debug('responseMap.get(jobs) '  + responseMap.get('jobs
                     List<Posting> postList = parseResponseBodyIntoPostingInnerClass(responseBody);
+                    for(Posting post: postList){
+                        System.debug('Posting.Name: ' + post.companyName);
+                    }
+                    system.debug(postList);
                     processResponse(postList);
                 }
             }catch(Exception e){
