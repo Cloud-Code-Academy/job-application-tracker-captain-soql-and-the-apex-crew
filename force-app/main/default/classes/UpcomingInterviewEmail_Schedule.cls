@@ -1,15 +1,14 @@
 
 public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable {
     public void execute(SchedulableContext ctx) {
-        sendDailyInterviewEmailReminders(1);
+        sendDailyInterviewEmailReminders(3);
     }
     @TestVisible
     private static void sendDailyInterviewEmailReminders(Integer nextNDays) {
-        String queryString = 'SELECT Id, Location, OwnerId, StartDateTime,Subject FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:' + nextNDays + ' WITH SYSTEM_MODE';
-        List<Event> upcomingInterviewList = Database.query(queryString);
+        List<Event> upcomingInterviewsList = getListOfUpcomingInterviewEventsInNDays(nextNDays);
 
-        if (!upcomingInterviewList.isEmpty()) {
-            Map<Id, List<Event>> ownerIdToListOfUpcomingInterviewsMap = generateMapOfOwnerIdsToInterviews(upcomingInterviewList);
+        if (!upcomingInterviewsList.isEmpty()) {
+            Map<Id, List<Event>> ownerIdToListOfUpcomingInterviewsMap = generateOwnerIdToInterviewsMap(upcomingInterviewsList);
             List<Messaging.SingleEmailMessage> emailsToSendOut = new List<Messaging.SingleEmailMessage>();
             for (Id ownerId : ownerIdToListOfUpcomingInterviewsMap.keySet()) {
                 Messaging.SingleEmailMessage emailToSend = generateEmail(ownerId, ownerIdToListOfUpcomingInterviewsMap.get(ownerId));
@@ -23,6 +22,12 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
                 System.debug('Error sending email: ' + ex.getMessage());
             } 
         }
+    }
+
+    @TestVisible
+    private static List<Event> getListOfUpcomingInterviewEventsInNDays(Integer nextNDays) {
+        String queryString = 'SELECT Id, Location, OwnerId, StartDateTime,Subject FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:' + nextNDays + ' ORDER BY StartDateTime ASC NULLS LAST WITH SYSTEM_MODE';
+        return Database.query(queryString);
     }
 
     @TestVisible
@@ -49,7 +54,7 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
         return tableHTML;
     }
     @TestVisible
-    private static Map<Id, List<Event>> generateMapOfOwnerIdsToInterviews(List<Event> events) {
+    private static Map<Id, List<Event>> generateOwnerIdToInterviewsMap(List<Event> events) {
         Map<Id, List<Event>> interviewsByOwnerId = new Map<Id, List<Event>>();
         for (Event event : events) {
             if (!interviewsByOwnerId.containsKey(event.OwnerId)) {
