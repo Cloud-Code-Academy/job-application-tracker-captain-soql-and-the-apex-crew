@@ -3,6 +3,7 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
     public void execute(SchedulableContext ctx) {
         sendDailyInterviewEmailReminders(3);
     }
+    
     @TestVisible
     private static void sendDailyInterviewEmailReminders(Integer nextNDays) {
         List<Event> upcomingInterviewsList = getListOfUpcomingInterviewEventsInNDays(nextNDays);
