@@ -1,5 +1,9 @@
 public with sharing class JobApplicationTriggerHandler {
 
+    private static final double MEDICARE_TAX_RATE = 0.0620;
+    private static final double SOCIAL_SECURITY_TAX = 0.0145;
+    private static final double FEDERAL_TAX =0.174;
+
     public static void createTaskBasedOnStatus(List<JobApplication__c> triggerDotNew) {
         Map<Id, List<String>> jobApplicationIdToTaskMap = createJobApplicationToTaskMap(triggerDotNew);
         List<Task> tasksToInsert = new List<Task>();
@@ -55,6 +59,17 @@ public with sharing class JobApplicationTriggerHandler {
             }
         }
     }
+
+        // Calculate Take Home Pay
+        public static void estimateTakeHomePay(List<JobApplication__c> triggerDotNew) {
+            List<JobApplication__c> jobAppsWithSalaries = new List<JobApplication__c>();
+            for(JobApplication__c jobApp : triggerDotNew) {
+                if(jobApp.Salary__c != null) {
+                    calculatePay(jobApp);
+                    jobAppsWithSalaries.add(jobApp);
+                }
+            }
+        }
 
     private static Map<Id, Id> getAccountIdToContactIdMapFromJobApplicationList(List<JobApplication__c> jobApplicationList) {
         List<Id> accountIds = getAccountIdsFromJobApplicationList(jobApplicationList);
@@ -153,5 +168,20 @@ public with sharing class JobApplicationTriggerHandler {
 
     private static Boolean hasContactLinkedToCompanyRef(Id companyIdFromJobApp, Map<Id, Id> accountIdToContactIdMap) {
         return accountIdToContactIdMap.get(companyIdFromJobApp) != null;
+    }
+
+
+    private static void calculatePay(JobApplication__c jobApp) {
+        double totalMedicare = MEDICARE_TAX_RATE * jobApp.Salary__c;
+        double totalSocialSecurity = SOCIAL_SECURITY_TAX * jobApp.Salary__c;
+        double totalFederalTax = FEDERAL_TAX * jobApp.Salary__c;
+
+        // We combine all the taxes into one variable for simplicity
+        double combineFederalAndMedicareAndSocialSecurity = totalFederalTax + totalMedicare + totalSocialSecurity;
+        jobApp.Estimated_Yearly_Pay__c = jobApp.Salary__c - combineFederalAndMedicareAndSocialSecurity;
+        jobApp.Estimated_Monthly_Pay__c = Math.round(jobApp.Estimated_Yearly_Pay__c / 12);  //rounding the monthly to get a clean number to work with
+        jobApp.Medicare__c = totalMedicare;
+        jobApp.Social_Security_Tax__c = totalSocialSecurity;
+        jobApp.Estimated_Federal_Tax__c = totalFederalTax;
     }
 }
