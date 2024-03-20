@@ -138,18 +138,18 @@ private class UpcomingInterviewEmail_Schedule_Test {
         
         Test.startTest();
         UpcomingInterviewEmail_Schedule.sendDailyInterviewEmailReminders(NUMBER_OF_TEST_INTERVIEWS_UPCOMING);
-        Assert.areEqual(1, Limits.getEmailInvocations(), 'expected a single instance to be created');
+        Assert.areEqual(1, Limits.getEmailInvocations(), 'expected a single email call to be invoked');
         Test.stopTest();
 
         List<EmailMessage> sentEmails = [SELECT Subject, ToAddress, HtmlBody FROM EmailMessage WITH USER_MODE];
-        System.assertEquals(NUM_USERS_TO_CREATE, sentEmails.size(), 'Expected 1 email to be sent');
+        System.assertEquals(NUM_USERS_TO_CREATE, sentEmails.size(), 'Expected 3 emails to be sent');
     }
 
     @isTest
     static void scheduleExecute_Test_shouldSchedule() {
         Test.startTest();
         String jobId = System.schedule('UpcomingInterviewEmail_Schedule Job', DAILY_6AM, new UpcomingInterviewEmail_Schedule());
-        // Assert.areEqual(1, Limits.getEmailInvocations(), 'expected a single instance to be created');
+
         CronTrigger ct = [
             SELECT Id, CronExpression, TimesTriggered, NextFireTime
             FROM CronTrigger 
