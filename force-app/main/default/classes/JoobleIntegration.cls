@@ -1,19 +1,20 @@
-/**
- * @description       : 
- * @author            : @Fritz
- * @group             : Cohort2
- * @last modified on  : 03-16-2024
- * @last modified by  : @Fritz
-**/
+
 public with sharing class JoobleIntegration {
     
     public static void makeHTTPCallout(String keywords, String location){
         Intergrations__mdt jooble = Intergrations__mdt.getInstance('JoobleAPI');
+        System.debug(jooble);
         if(jooble != null && jooble.APIKey__c != null && jooble.Endpoint__c != null){
             HttpRequest request = new HttpRequest();
             request.setEndpoint(jooble.Endpoint__c + jooble.APIKey__c);
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json');
+            
+            System.debug(request.getEndpoint());
+            // System.debug(request.getBody());
+            // System.debug( request.setMethod);
+            // System.debug(setHeader);
+            
 
             Map<String,Object> requestBodyMap = new Map<String, Object>{
                 'keywords' => keywords,

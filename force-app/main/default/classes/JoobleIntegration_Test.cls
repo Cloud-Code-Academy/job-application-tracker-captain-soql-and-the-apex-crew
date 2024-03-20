@@ -1,24 +1,40 @@
 @isTest
 public with sharing class JoobleIntegration_Test {
-
-    /*
+ 
+    
     @IsTest
-    static void testGetDummyJSONUserFromId() {
-        // Create contact
-        Contact cont = [SELECT Id FROM Contact LIMIT 1];
-        
-        // Register the mock callout class
-        Test.setMock(HttpCalloutMock.class, new JoobleIntegration_Mock());
-        
-        // As this is a future method, we need to enclose it in Test.startTest() and Test.stopTest() to ensure it's executed in the test context.
-        Test.startTest();
-        JoobleIntegration.makeHTTPCallout(keywords, location); // Call the method with an example userId
-        Test.stopTest();
+    static void testJoobleIntegrationHTTPCallout() {
+        //account created for upsert
+        //jobposting for the mock
+        //set up a 400 mock response
+        //set the mock callout class
+        //run the test
+        //verify the mock response is not null
+        //throwing false exception inside the test class--testing exceptions
+        //get the info from the class
+        //job posting and account are what we are creating and using
 
-        // After the stopTest, the future method will have run. Now we can check if the contact was created correctly.
-        //System.assertEquals(200, res.getStatusCode());
+        // set the mock callout class
+        Test.setMock(HttpCalloutMock.class, new JoobleIntegration_Mock());
+        String keywords = 'Salesforce Developer';
+        String location = 'Denver, CO';
+        
+        test.startTest();
+        JoobleIntegration.makeHTTPCallout(keywords, location);
+        test.stopTest();
+
+        List<Account> actualAccounts = [SELECT Name FROM Account WHERE Name = 'Apex Informatics'];
+        List<JobPosting__c> actualJobPostings = [SELECT Name, Location__c, Salary__c FROM JobPosting__c WHERE Name = 'Salesforce Developer'];
+        
+        System.debug(actualAccounts);    
+        System.debug(actualJobPostings);  
+        
+        // System.assertEquals(1, actualJobPostings.size(), 'Expected one JobPosting__c record');
+        // System.assertEquals('Salesforce Developer', actualJobPostings[0].Name, 'JobPosting__c name does not match');
+        // System.assertEquals('Denver, CO', actualJobPostings[0].Location__c, 'JobPosting__c location does not match');
+    
     }
-    */
+
 
     @isTest 
     static void parseResponseBodyIntoPostingInnerClass_Test() {
