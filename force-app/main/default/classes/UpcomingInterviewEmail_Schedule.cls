@@ -17,6 +17,8 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
             }
             try {
                 Messaging.sendEmail(emailsToSendOut);
+                // assert email limit ticks up by 1
+                // manually go trigger email to send to visual test
             } catch (Exception ex) {
                 System.debug('Error sending email: ' + ex.getMessage());
             } 
