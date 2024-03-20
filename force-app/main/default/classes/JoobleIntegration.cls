@@ -107,13 +107,13 @@ public with sharing class JoobleIntegration {
             }
         }
         try{
-            upsert as system accountNameToAccount.values();
+            Database.upsert(accountNameToAccount.values(), false, AccessLevel.SYSTEM_MODE);
             for(JobPosting__c jobPost: postingsToUpsert){
                 if(jobPost.CompanyRef__c == null){
                     jobPost.CompanyRef__c = accountNameToAccount.get(externalIdToPosting.get(jobPost.JooblePostingId__c).companyName).Id;
                 }
             }
-            upsert as system postingsToUpsert JooblePostingId__c;
+            Database.upsert(postingsToUpsert, JobPosting__c.Fields.JooblePostingId__c, false, AccessLevel.SYSTEM_MODE);
         }catch(Exception e){
             System.debug('Exception is :' + e.getMessage());
             System.debug('Cause is: ' + e.getCause());
