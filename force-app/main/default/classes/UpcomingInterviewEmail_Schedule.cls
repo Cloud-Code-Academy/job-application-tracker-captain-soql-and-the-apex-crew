@@ -27,7 +27,7 @@ public with sharing class UpcomingInterviewEmail_Schedule implements Schedulable
 
     @TestVisible
     private static List<Event> getListOfUpcomingInterviewEventsInNDays(Integer nextNDays) {
-        String queryString = 'SELECT Id, Location, OwnerId, StartDateTime,Subject FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:' + nextNDays + ' ORDER BY StartDateTime ASC NULLS LAST WITH SYSTEM_MODE';
+        String queryString = 'SELECT Id, Location, OwnerId, StartDateTime,Subject FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:' + nextNDays + ' ORDER BY StartDateTime ASC NULLS LAST';
         return Database.query(queryString);
     }
 
