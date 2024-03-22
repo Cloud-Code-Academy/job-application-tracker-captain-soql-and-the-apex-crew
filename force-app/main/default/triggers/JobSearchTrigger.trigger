@@ -1,4 +1,4 @@
-trigger JobSearchTrigger on JobSearchCriteria__c (after insert, , before insert, after update, before update, before delete, after undelete) {
+trigger JobSearchTrigger on JobSearchCriteria__c (after insert, before insert, after update, before update, before delete, after undelete) {
     switch on trigger.operationType {
         when AFTER_INSERT, AFTER_UNDELETE{
             JobSearchTriggerHandler.scheduleNewJobSearch(Trigger.new);

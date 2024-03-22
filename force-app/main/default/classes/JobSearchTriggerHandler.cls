@@ -22,15 +22,18 @@ public with sharing class JobSearchTriggerHandler {
 
     }
     public static void updateJobSearch(List<JobSearchCriteria__c> triggerDotNew, Map<Id, JobSearchCriteria__c> triggerDotOldMap) {
-        //Search for crontrigger where CronJobDetail.Name = JobTitle + Location if one exist do nothing if one doesnt create it.
         Map<String, JobSearchCriteria__c> cronTitleToTriggerMap = new Map<String,JobSearchCriteria__c>();
+        Set<String> labelsToAbort = new Set<String>();
         for(JobSearchCriteria__c search: triggerDotNew){
             JobSearchCriteria__c oldSearch = triggerDotOldMap.get(search.Id);
-            //if()
+            if((search.LabelTrig__c != oldSearch.LabelTrig__c) || (search.IsActive__c == false && oldSearch.IsActive__c)){
+                labelsToAbort.add(oldSearch.LabelTrig__c);
+            }
         }
-        //Remove old jobs
-        //Check if Active
-        //Schedule new if active
+        for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:labelsToAbort]){
+            System.abortJob(crTrig.Id);
+        }
+        scheduleNewJobSearch(triggerDotNew);
     }
     public static void clearJobSearch(List<JobSearchCriteria__c> triggerDotOld){
         Set<String> searchesToDelete = new Set<String>();
@@ -42,7 +45,10 @@ public with sharing class JobSearchTriggerHandler {
         }
     }
     public static void preventDuplication(List<JobSearchCriteria__c> triggerDotNew){
-        
+        for(JobSearchCriteria__c search: triggerDotNew){
+            search.LabelTrig__c = searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c);
+        }
+
     }
     private static String searchTitle(String title, String city, String state){
         return title + ' ' + city + ', ' + state;
