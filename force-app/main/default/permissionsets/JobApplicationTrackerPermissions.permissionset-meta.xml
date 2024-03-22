@@ -161,8 +161,8 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>JobSearchCriteria__c.Label__c</field>
+        <editable>true</editable>
+        <field>JobSearchCriteria__c.LabelTrig__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
