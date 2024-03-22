@@ -1,7 +1,7 @@
 
 public with sharing class JoobleIntegration {
     
-    public static void makeHTTPCallout(String keywords, String location){
+    @future(callout=true)public static void makeHTTPCallout(String keywords, String location){
         Intergrations__mdt jooble = Intergrations__mdt.getInstance('JoobleAPI');
         System.debug(jooble);
         if(jooble != null && jooble.APIKey__c != null && jooble.Endpoint__c != null){
