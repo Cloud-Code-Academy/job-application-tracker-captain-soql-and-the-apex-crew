@@ -8,7 +8,7 @@ public with sharing class JobSearchTriggerHandler {
             }
         }
         Map<String, CronTrigger> existingCronTriggerMap = new Map<String, CronTrigger>();
-        for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:cronTitleToTriggerMap.keySet()]){
+        for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:cronTitleToTriggerMap.keySet() WITH SYSTEM_MODE]){
             existingCronTriggerMap.put(crTrig.CronJobDetail.Name, crTrig);
         }
         for(JobSearchCriteria__c search: triggerDotNew){
@@ -30,7 +30,7 @@ public with sharing class JobSearchTriggerHandler {
                 labelsToAbort.add(oldSearch.LabelTrig__c);
             }
         }
-        for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:labelsToAbort]){
+        for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:labelsToAbort WITH SYSTEM_MODE]){
             System.abortJob(crTrig.Id);
         }
         scheduleNewJobSearch(triggerDotNew);
@@ -40,13 +40,17 @@ public with sharing class JobSearchTriggerHandler {
         for(JobSearchCriteria__c search: triggerDotOld){
             searchesToDelete.add(searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c));
         }
-        for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:searchesToDelete]){
+        for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:searchesToDelete WITH SYSTEM_MODE]){
             System.abortJob(crTrig.Id);
         }
     }
     public static void preventDuplication(List<JobSearchCriteria__c> triggerDotNew){
+        List<JobSearchCriteria__c> currentSearches = [SELECT Id FROM JobSearchCriteria__c WHERE IsActive__c = TRUE WITH SYSTEM_MODE];
         for(JobSearchCriteria__c search: triggerDotNew){
             search.LabelTrig__c = searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c);
+            if(currentSearches.size() > 50){
+                search.addError('Error System Limit Exception: Only 50 searches active job searches are allowed');
+            }
         }
 
     }
