@@ -10,7 +10,7 @@ private class UpcomingInterviewEmail_Schedule_Test {
     ].Id;
     private static final Integer HEADER_ROW = 1;
     private static final String DAILY_6AM = '0 0 6 * * ?';
-    private static final String EMAIL_TARGET_FOR_TEST = 'testUser' + String.valueOf(DateTime.now().getTime()) + '@test.com';
+    private static final String CURRENT_USER_EMAIL_TARGET = UserInfo.getUserEmail();
     private static final Integer LOOK_AHEAD_NEXT_N_DAYS = 1;
 
     @TestSetup
@@ -23,7 +23,7 @@ private class UpcomingInterviewEmail_Schedule_Test {
             User testUser = new User(
                 Alias = 'TUser' + i,
                 Username = 'testuser' + i + uniqueString + '@example.com',
-                Email = EMAIL_TARGET_FOR_TEST,
+                Email = CURRENT_USER_EMAIL_TARGET,
                 LastName = 'TestUser' + i,
                 ProfileId = standardUserProfile.Id,
                 TimeZoneSidKey = 'America/Los_Angeles',
