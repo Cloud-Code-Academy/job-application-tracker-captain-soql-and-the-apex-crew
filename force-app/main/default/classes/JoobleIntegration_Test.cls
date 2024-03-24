@@ -4,13 +4,11 @@ public with sharing class JoobleIntegration_Test {
     @IsTest
     static void testJoobleIntegrationHTTPCallout() { 
 
-
         // set the mock callout class
         Test.setMock(HttpCalloutMock.class, new JoobleIntegration_Mock());
         String keywords = 'Salesforce Developer';
         String location = 'Denver, CO';
-        
-        
+
         Account acc1 = new Account(
             Name = 'Apex Informatics'
         );
@@ -25,25 +23,20 @@ public with sharing class JoobleIntegration_Test {
         List<Account> actualAccounts = [SELECT Name FROM Account WHERE  Name = :accountNames];
         List<JobPosting__c> actualJobPostings = [SELECT Name, CompanyRef__c, JooblePostingId__c, Link__c, Location__c, Salary__c, Snippet__c, Source__c, Type__c, Updated__c FROM JobPosting__c];
 
-        System.assertEquals(3, actualAccounts.size(), 'Expected 4 Account record');
-        System.assertEquals(3, actualJobPostings.size(), 'Expected three JobPosting__c record');
+        System.assertEquals(3, actualAccounts.size(), 'Expected 3 Account record');
+        System.assertEquals(3, actualJobPostings.size(), 'Expected 3 JobPosting__c record');
 
         for(Account a : actualAccounts) {
-             System.assertEquals('Mars', actualAccounts[0].Name, 'Account name does not match');
-             System.assertEquals('Prospect Infosystem Inc', actualAccounts[1].Name, 'Account name does not match');
-             System.assertEquals('Apex Informatics', actualAccounts[2].Name, 'Account name does not match');
-             System.assertEquals('Procare Solutions', actualAccounts[3].Name, 'Account name does not match');
-             System.assertEquals('Salesforce Developer', actualJobPostings[1].Name, 'JobPosting__c name does not match');
-             System.assertEquals('8542290820435711574', actualJobPostings[0].JooblePostingId__c, 'JobPosting__c title does not match');
+            //System.assertEquals('Mars', actualAccounts[0].Name, 'Account name does not match');
+            System.assertEquals('Prospect Infosystem Inc', actualAccounts[0].Name, 'Account name does not match');
+            System.assertEquals('Apex Informatics', actualAccounts[1].Name, 'Account name does not match');
+            System.assertEquals('Procare Solutions', actualAccounts[2].Name, 'Account name does not match');
+            
+            System.assertEquals('8542290820435711574', actualJobPostings[0].JooblePostingId__c, 'JobPosting__c title does not match');
+            System.assertEquals('Salesforce Developer', actualJobPostings[1].Name, 'JobPosting__c name does not match');
             System.assertEquals('Denver, CO', actualJobPostings[1].Location__c, 'JobPosting__c location does not match');
         }
-        
-       
-
-        
-    
     }
-
 
     @isTest 
     static void parseResponseBodyIntoPostingInnerClass_Test() {

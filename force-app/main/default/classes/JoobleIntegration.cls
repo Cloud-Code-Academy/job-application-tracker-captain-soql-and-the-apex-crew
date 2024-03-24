@@ -116,7 +116,6 @@ public with sharing class JoobleIntegration {
             newJobPost.postingId = String.valueOf(jobPostRecord.get('id'));
             newJobPost.location = String.valueOf(jobPostRecord.get('location'));
             newJobPost.snippet = String.valueOf(jobPostRecord.get('snippet'));
-            System.debug(newJobPost.snippet);
             newJobPost.salary = String.valueOf(jobPostRecord.get('salary'));
             newJobPost.source = String.valueOf(jobPostRecord.get('source'));
             newJobPost.type = String.valueOf(jobPostRecord.get('type'));
