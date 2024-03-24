@@ -1,20 +1,12 @@
-
 public with sharing class JoobleIntegration {
     
-    public static void makeHTTPCallout(String keywords, String location){
+    @future(callout=true)public static void makeHTTPCallout(String keywords, String location){
         Intergrations__mdt jooble = Intergrations__mdt.getInstance('JoobleAPI');
-        System.debug(jooble);
         if(jooble != null && jooble.APIKey__c != null && jooble.Endpoint__c != null){
             HttpRequest request = new HttpRequest();
             request.setEndpoint(jooble.Endpoint__c + jooble.APIKey__c);
             request.setMethod('POST');
-            request.setHeader('Content-Type', 'application/json');
-            
-            System.debug(request.getEndpoint());
-            // System.debug(request.getBody());
-            // System.debug( request.setMethod);
-            // System.debug(setHeader);
-            
+            request.setHeader('Content-Type', 'application/json');          
 
             Map<String,Object> requestBodyMap = new Map<String, Object>{
                 'keywords' => keywords,
@@ -27,21 +19,11 @@ public with sharing class JoobleIntegration {
             HttpResponse response = new HttpResponse();
             try{
                 response = http.send(request);
-                String responseBody = response.getBody();
-                System.debug('Response Body is: ' + responseBody);
+                String responseBody = response.getBody().replace('\r\n', '');
                 Map<String, Object> responseMap = (Map<String, Object>)JSON.deserializeUntyped(responseBody);
-                //System.debug('responseMap '  + responseMap);
-                System.debug('getStatusCode: ' +response.getStatusCode());
                 if(response.getStatusCode() != 200){
-                    System.debug('Response was not 200 it was :' + response.getStatusCode());
                 }else{
-                    System.debug('Response was 200');
-                    // System.debug('responseMap.get(jobs) '  + responseMap.get('jobs
                     List<Posting> postList = parseResponseBodyIntoPostingInnerClass(responseBody);
-                    for(Posting post: postList){
-                        System.debug('Posting.Name: ' + post.companyName);
-                    }
-                    system.debug(postList);
                     processResponse(postList);
                 }
             }catch(Exception e){
@@ -134,6 +116,7 @@ public with sharing class JoobleIntegration {
             newJobPost.postingId = String.valueOf(jobPostRecord.get('id'));
             newJobPost.location = String.valueOf(jobPostRecord.get('location'));
             newJobPost.snippet = String.valueOf(jobPostRecord.get('snippet'));
+            System.debug(newJobPost.snippet);
             newJobPost.salary = String.valueOf(jobPostRecord.get('salary'));
             newJobPost.source = String.valueOf(jobPostRecord.get('source'));
             newJobPost.type = String.valueOf(jobPostRecord.get('type'));
@@ -174,3 +157,4 @@ public with sharing class JoobleIntegration {
         return dateValue;
     }
 }
+
