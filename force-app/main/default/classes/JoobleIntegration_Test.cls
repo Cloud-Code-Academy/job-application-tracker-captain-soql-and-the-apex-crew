@@ -26,16 +26,20 @@ public with sharing class JoobleIntegration_Test {
         System.assertEquals(3, actualAccounts.size(), 'Expected 3 Account record');
         System.assertEquals(3, actualJobPostings.size(), 'Expected 3 JobPosting__c record');
 
-        for(Account a : actualAccounts) {
-            //System.assertEquals('Mars', actualAccounts[0].Name, 'Account name does not match');
-            System.assertEquals('Prospect Infosystem Inc', actualAccounts[0].Name, 'Account name does not match');
-            System.assertEquals('Apex Informatics', actualAccounts[1].Name, 'Account name does not match');
-            System.assertEquals('Procare Solutions', actualAccounts[2].Name, 'Account name does not match');
-            
-            System.assertEquals('8542290820435711574', actualJobPostings[0].JooblePostingId__c, 'JobPosting__c title does not match');
-            System.assertEquals('Salesforce Developer', actualJobPostings[1].Name, 'JobPosting__c name does not match');
-            System.assertEquals('Denver, CO', actualJobPostings[1].Location__c, 'JobPosting__c location does not match');
-        }
+
+        System.assertEquals('Prospect Infosystem Inc', actualAccounts[0].Name, 'Account name does not match');
+        System.assertEquals('Apex Informatics', actualAccounts[1].Name, 'Account name does not match');
+        System.assertEquals('Procare Solutions', actualAccounts[2].Name, 'Account name does not match');
+
+        System.assertEquals('8542290820435711574', actualJobPostings[0].JooblePostingId__c, 'JobPosting__c Id does not match');
+        System.assertEquals('7826091234674837853', actualJobPostings[1].JooblePostingId__c, 'JobPosting__c Id does not match');
+        System.assertEquals('-8481210526286724053', actualJobPostings[2].JooblePostingId__c, 'JobPosting__c Id does not match');
+        System.assertEquals('Salesforce Developer', actualJobPostings[0].Name, 'JobPosting__c name does not match');
+        System.assertEquals('Salesforce Developer', actualJobPostings[1].Name, 'JobPosting__c name does not match');
+        System.assertEquals('Salesforce Developer', actualJobPostings[2].Name, 'JobPosting__c name does not match');
+        System.assertEquals('Denver, CO', actualJobPostings[0].Location__c, 'JobPosting__c location does not match');
+        System.assertEquals('Denver, CO', actualJobPostings[1].Location__c, 'JobPosting__c location does not match');
+        System.assertEquals('Denver, CO', actualJobPostings[2].Location__c, 'JobPosting__c location does not match');
     }
 
     @isTest 
@@ -98,8 +102,9 @@ public with sharing class JoobleIntegration_Test {
                 Name = 'Repair Technician',
                 JooblePostingId__c = '7826091234674837853');
 
-            insert jobPost;
-            insert jobPost1;
+            List<JobPosting__c> jobPostToInsert = new List<JobPosting__c>{jobPost, jobPost1};
+
+            insert jobPostToInsert;
 
             JobApplication__c jobApp = new JobApplication__c(
                 Account__c = acc.Id,
