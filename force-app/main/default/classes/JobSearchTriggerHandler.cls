@@ -48,11 +48,10 @@ public with sharing class JobSearchTriggerHandler {
         List<JobSearchCriteria__c> currentSearches = [SELECT Id FROM JobSearchCriteria__c WHERE IsActive__c = TRUE WITH SYSTEM_MODE];
         for(JobSearchCriteria__c search: triggerDotNew){
             search.LabelTrig__c = searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c);
-            if(currentSearches.size() > 50){
-                search.addError('Error System Limit Exception: Only 50 searches active job searches are allowed');
+            if(triggerDotNew.size() > 50){
+                search.addError('Object Limit Exceeded: Only 50 Search Criteria may be modified at a time.');
             }
         }
-
     }
     private static String searchTitle(String title, String city, String state){
         return title + ' ' + city + ', ' + state;
