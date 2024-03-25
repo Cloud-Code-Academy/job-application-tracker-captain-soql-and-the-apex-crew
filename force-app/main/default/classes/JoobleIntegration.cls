@@ -1,19 +1,12 @@
-/**
- * @description       : 
- * @author            : @Fritz
- * @group             : Cohort2
- * @last modified on  : 03-16-2024
- * @last modified by  : @Fritz
-**/
 public with sharing class JoobleIntegration {
     
-    public static void makeHTTPCallout(String keywords, String location){
+    @future(callout=true)public static void makeHTTPCallout(String keywords, String location){
         Intergrations__mdt jooble = Intergrations__mdt.getInstance('JoobleAPI');
         if(jooble != null && jooble.APIKey__c != null && jooble.Endpoint__c != null){
             HttpRequest request = new HttpRequest();
             request.setEndpoint(jooble.Endpoint__c + jooble.APIKey__c);
             request.setMethod('POST');
-            request.setHeader('Content-Type', 'application/json');
+            request.setHeader('Content-Type', 'application/json');          
 
             Map<String,Object> requestBodyMap = new Map<String, Object>{
                 'keywords' => keywords,
@@ -26,11 +19,9 @@ public with sharing class JoobleIntegration {
             HttpResponse response = new HttpResponse();
             try{
                 response = http.send(request);
-                String responseBody = response.getBody();
+                String responseBody = response.getBody().replace('\r\n', '');
                 Map<String, Object> responseMap = (Map<String, Object>)JSON.deserializeUntyped(responseBody);
-
                 if(response.getStatusCode() != 200){
-                    System.debug('Response was not 200 it was :' + response.getStatusCode());
                 }else{
                     List<Posting> postList = parseResponseBodyIntoPostingInnerClass(responseBody);
                     processResponse(postList);
@@ -98,13 +89,13 @@ public with sharing class JoobleIntegration {
             }
         }
         try{
-            upsert as system accountNameToAccount.values();
+            Database.upsert(accountNameToAccount.values(), false, AccessLevel.SYSTEM_MODE);
             for(JobPosting__c jobPost: postingsToUpsert){
                 if(jobPost.CompanyRef__c == null){
                     jobPost.CompanyRef__c = accountNameToAccount.get(externalIdToPosting.get(jobPost.JooblePostingId__c).companyName).Id;
                 }
             }
-            upsert as system postingsToUpsert JooblePostingId__c;
+            Database.upsert(postingsToUpsert, JobPosting__c.Fields.JooblePostingId__c, false, AccessLevel.SYSTEM_MODE);
         }catch(Exception e){
             System.debug('Exception is :' + e.getMessage());
             System.debug('Cause is: ' + e.getCause());
@@ -165,3 +156,4 @@ public with sharing class JoobleIntegration {
         return dateValue;
     }
 }
+
