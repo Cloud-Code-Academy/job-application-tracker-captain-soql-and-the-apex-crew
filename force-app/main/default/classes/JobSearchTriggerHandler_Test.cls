@@ -45,6 +45,23 @@ public with sharing class JobSearchTriggerHandler_Test {
         }
     }
     @isTest
+    static void testAtLimit(){
+        List<JobSearchCriteria__c> jobSearchList = new List<JobSearchCriteria__c>();
+        for(Integer i = 0 ; i < 50; i++ ){
+            JobSearchCriteria__c bulkSearchInsert = new JobSearchCriteria__c(
+            IsActive__c = true,
+            StatePick__c = 'Texas',
+            City__c = 'Ding Dong',
+            JobTitle__c = 'Ditcher ' + i
+            );
+            jobSearchList.add(bulkSearchInsert);
+        }
+        insert jobSearchList;
+        List<AggregateResult> searchesInSystem = [SELECT COUNT(Id)countJobSearchId FROM JobSearchCriteria__c];
+        Assert.areEqual(51, searchesInSystem[0].get('countJobSearchId'), 'Expected 51 total, 1 from TestSetup and 50 from this test.');
+
+    }
+    @isTest
     static void testInsertingDuplicate(){
         JobSearchCriteria__c defaultSearch = new JobSearchCriteria__c(
             IsActive__c = true,
