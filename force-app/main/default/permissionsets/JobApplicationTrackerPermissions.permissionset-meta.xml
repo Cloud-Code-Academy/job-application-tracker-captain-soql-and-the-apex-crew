@@ -157,6 +157,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>JobSearchCriteria__c.IsActive__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobSearchCriteria__c.LabelTrig__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Task.Description</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -232,6 +242,15 @@
         <object>JobPosting__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>JobSearchCriteria__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <recordTypeVisibilities>
         <recordType>Event.Default</recordType>
         <visible>true</visible>
@@ -250,6 +269,10 @@
     </tabSettings>
     <tabSettings>
         <tab>JobPosting__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>JobSearchCriteria__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
 </PermissionSet>

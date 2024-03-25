@@ -31,10 +31,6 @@ public with sharing class JoobleIntegration {
             }
         }
     }
-    /*
-    private static HttpResponse makeHTTPRequest(){
-
-    }*/
     private static void processResponse(List<Posting> postings){
         Map<String, Account> accountNameToAccount = new Map<String, Account>();
         List<String> acccountNames = new List<String>();
@@ -156,4 +152,3 @@ public with sharing class JoobleIntegration {
         return dateValue;
     }
 }
-
