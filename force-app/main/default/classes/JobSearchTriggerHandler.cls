@@ -1,19 +1,14 @@
 public with sharing class JobSearchTriggerHandler {
     public static void scheduleNewJobSearch(List<JobSearchCriteria__c> triggerDotNew) {
-        //Search for crontrigger where CronJobDetail.Name = JobTitle + Location if one exist do nothing if one doesnt create it.
         Map<String, JobSearchCriteria__c> cronTitleToTriggerMap = new Map<String,JobSearchCriteria__c>();
         for(JobSearchCriteria__c search: triggerDotNew){
             if(search.IsActive__c){
                 cronTitleToTriggerMap.put(searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c), search);
             }
         }
-        /*Map<String, CronTrigger> existingCronTriggerMap = new Map<String, CronTrigger>();
-        for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:cronTitleToTriggerMap.keySet() WITH SYSTEM_MODE]){
-            existingCronTriggerMap.put(crTrig.CronJobDetail.Name, crTrig);
-        }*/
         for(JobSearchCriteria__c search: triggerDotNew){
             String searchLabel = searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c);
-            if(/*existingCronTriggerMap.get(searchLabel) == null && */search.IsActive__c){
+            if(search.IsActive__c){
                 JoobleIntegration_Schedule scheduleJob = new JoobleIntegration_Schedule(search.JobTitle__c, search.City__c + ', ' + search.StatePick__c);
                 String cron = '0 0 0 ? * *';//Every day at midnight
                 System.schedule(searchLabel, cron, scheduleJob);
