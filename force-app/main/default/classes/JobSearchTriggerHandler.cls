@@ -7,13 +7,13 @@ public with sharing class JobSearchTriggerHandler {
                 cronTitleToTriggerMap.put(searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c), search);
             }
         }
-        Map<String, CronTrigger> existingCronTriggerMap = new Map<String, CronTrigger>();
+        /*Map<String, CronTrigger> existingCronTriggerMap = new Map<String, CronTrigger>();
         for(CronTrigger crTrig : [SELECT Id,CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name IN:cronTitleToTriggerMap.keySet() WITH SYSTEM_MODE]){
             existingCronTriggerMap.put(crTrig.CronJobDetail.Name, crTrig);
-        }
+        }*/
         for(JobSearchCriteria__c search: triggerDotNew){
             String searchLabel = searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c);
-            if(existingCronTriggerMap.get(searchLabel) == null && search.IsActive__c){
+            if(/*existingCronTriggerMap.get(searchLabel) == null && */search.IsActive__c){
                 JoobleIntegration_Schedule scheduleJob = new JoobleIntegration_Schedule(search.JobTitle__c, search.City__c + ', ' + search.StatePick__c);
                 String cron = '0 0 0 ? * *';//Every day at midnight
                 System.schedule(searchLabel, cron, scheduleJob);
@@ -45,7 +45,6 @@ public with sharing class JobSearchTriggerHandler {
         }
     }
     public static void preventDuplication(List<JobSearchCriteria__c> triggerDotNew){
-        List<JobSearchCriteria__c> currentSearches = [SELECT Id FROM JobSearchCriteria__c WHERE IsActive__c = TRUE WITH SYSTEM_MODE];
         for(JobSearchCriteria__c search: triggerDotNew){
             search.LabelTrig__c = searchTitle(search.JobTitle__c, search.City__c, search.StatePick__c);
             if(triggerDotNew.size() > 50){

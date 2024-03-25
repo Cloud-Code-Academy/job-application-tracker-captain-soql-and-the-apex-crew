@@ -27,7 +27,7 @@ public with sharing class JoobleIntegration {
             HttpResponse response = new HttpResponse();
             try{
                 response = http.send(request);
-                String responseBody = response.getBody();
+                String responseBody = response.getBody().replace('\r\n', '');
                 System.debug('Response Body is: ' + responseBody);
                 Map<String, Object> responseMap = (Map<String, Object>)JSON.deserializeUntyped(responseBody);
                 //System.debug('responseMap '  + responseMap);
