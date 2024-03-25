@@ -1,20 +1,12 @@
-
 public with sharing class JoobleIntegration {
     
     @future(callout=true)public static void makeHTTPCallout(String keywords, String location){
         Intergrations__mdt jooble = Intergrations__mdt.getInstance('JoobleAPI');
-        System.debug(jooble);
         if(jooble != null && jooble.APIKey__c != null && jooble.Endpoint__c != null){
             HttpRequest request = new HttpRequest();
             request.setEndpoint(jooble.Endpoint__c + jooble.APIKey__c);
             request.setMethod('POST');
-            request.setHeader('Content-Type', 'application/json');
-            
-            System.debug(request.getEndpoint());
-            // System.debug(request.getBody());
-            // System.debug( request.setMethod);
-            // System.debug(setHeader);
-            
+            request.setHeader('Content-Type', 'application/json');          
 
             Map<String,Object> requestBodyMap = new Map<String, Object>{
                 'keywords' => keywords,
@@ -28,20 +20,10 @@ public with sharing class JoobleIntegration {
             try{
                 response = http.send(request);
                 String responseBody = response.getBody().replace('\r\n', '');
-                System.debug('Response Body is: ' + responseBody);
                 Map<String, Object> responseMap = (Map<String, Object>)JSON.deserializeUntyped(responseBody);
-                //System.debug('responseMap '  + responseMap);
-                System.debug('getStatusCode: ' +response.getStatusCode());
                 if(response.getStatusCode() != 200){
-                    System.debug('Response was not 200 it was :' + response.getStatusCode());
                 }else{
-                    System.debug('Response was 200');
-                    // System.debug('responseMap.get(jobs) '  + responseMap.get('jobs
                     List<Posting> postList = parseResponseBodyIntoPostingInnerClass(responseBody);
-                    for(Posting post: postList){
-                        System.debug('Posting.Name: ' + post.companyName);
-                    }
-                    system.debug(postList);
                     processResponse(postList);
                 }
             }catch(Exception e){
@@ -49,10 +31,6 @@ public with sharing class JoobleIntegration {
             }
         }
     }
-    /*
-    private static HttpResponse makeHTTPRequest(){
-
-    }*/
     private static void processResponse(List<Posting> postings){
         Map<String, Account> accountNameToAccount = new Map<String, Account>();
         List<String> acccountNames = new List<String>();

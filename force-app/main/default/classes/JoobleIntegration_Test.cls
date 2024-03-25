@@ -1,37 +1,46 @@
 @isTest
 public with sharing class JoobleIntegration_Test {
- 
-    
+
     @IsTest
-    static void testJoobleIntegrationHTTPCallout() {
-        //account created for upsert
-        //jobposting for the mock
-        //set up a 400 mock response
-        //set the mock callout class
-        //run the test
-        //verify the mock response is not null
-        //throwing false exception inside the test class--testing exceptions
-        //get the info from the class
-        //job posting and account are what we are creating and using
+    static void testJoobleIntegrationHTTPCallout() { 
 
         // set the mock callout class
         Test.setMock(HttpCalloutMock.class, new JoobleIntegration_Mock());
         String keywords = 'Salesforce Developer';
         String location = 'Denver, CO';
-        
+
+        Account acc1 = new Account(
+            Name = 'Apex Informatics'
+        );
+        insert acc1;
+
         test.startTest();
         JoobleIntegration.makeHTTPCallout(keywords, location);
         test.stopTest();
 
-        List<Account> actualAccounts = [SELECT Name FROM Account];
-        List<JobPosting__c> actualJobPostings = [SELECT Name, Location__c, Salary__c FROM JobPosting__c];
-        
-        // System.assertEquals(1, actualJobPostings.size(), 'Expected one JobPosting__c record');
-        // System.assertEquals('Salesforce Developer', actualJobPostings[0].Name, 'JobPosting__c name does not match');
-        // System.assertEquals('Denver, CO', actualJobPostings[0].Location__c, 'JobPosting__c location does not match');
-    
-    }
+        List<String> accountNames = new List<String>{'Prospect Infosystem Inc', 'Apex Informatics', 'Procare Solutions'};
 
+        List<Account> actualAccounts = [SELECT Name FROM Account WHERE  Name = :accountNames];
+        List<JobPosting__c> actualJobPostings = [SELECT Name, CompanyRef__c, JooblePostingId__c, Link__c, Location__c, Salary__c, Snippet__c, Source__c, Type__c, Updated__c FROM JobPosting__c];
+
+        System.assertEquals(3, actualAccounts.size(), 'Expected 3 Account record');
+        System.assertEquals(3, actualJobPostings.size(), 'Expected 3 JobPosting__c record');
+
+
+        System.assertEquals('Prospect Infosystem Inc', actualAccounts[0].Name, 'Account name does not match');
+        System.assertEquals('Apex Informatics', actualAccounts[1].Name, 'Account name does not match');
+        System.assertEquals('Procare Solutions', actualAccounts[2].Name, 'Account name does not match');
+
+        System.assertEquals('8542290820435711574', actualJobPostings[0].JooblePostingId__c, 'JobPosting__c Id does not match');
+        System.assertEquals('7826091234674837853', actualJobPostings[1].JooblePostingId__c, 'JobPosting__c Id does not match');
+        System.assertEquals('-8481210526286724053', actualJobPostings[2].JooblePostingId__c, 'JobPosting__c Id does not match');
+        System.assertEquals('Salesforce Developer', actualJobPostings[0].Name, 'JobPosting__c name does not match');
+        System.assertEquals('Salesforce Developer', actualJobPostings[1].Name, 'JobPosting__c name does not match');
+        System.assertEquals('Salesforce Developer', actualJobPostings[2].Name, 'JobPosting__c name does not match');
+        System.assertEquals('Denver, CO', actualJobPostings[0].Location__c, 'JobPosting__c location does not match');
+        System.assertEquals('Denver, CO', actualJobPostings[1].Location__c, 'JobPosting__c location does not match');
+        System.assertEquals('Denver, CO', actualJobPostings[2].Location__c, 'JobPosting__c location does not match');
+    }
 
     @isTest 
     static void parseResponseBodyIntoPostingInnerClass_Test() {
@@ -77,14 +86,26 @@ public with sharing class JoobleIntegration_Test {
     @TestSetup
         static void makeData() {
             Account acc = new Account(
-                Name = 'Mars'
+                Name = 'Prospect Infosystem Inc'
             );
+
             insert acc;
+
             JobPosting__c jobPost = new JobPosting__c(
                 CompanyRef__c = acc.Id,
-                Name = 'Repair Technician'
+                Name = 'Repair Technician',
+                JooblePostingId__c = '8542290820435711574'
+
             );
-            insert jobPost;
+            JobPosting__c jobPost1 = new JobPosting__c(
+                CompanyRef__c = acc.Id,
+                Name = 'Repair Technician',
+                JooblePostingId__c = '7826091234674837853');
+
+            List<JobPosting__c> jobPostToInsert = new List<JobPosting__c>{jobPost, jobPost1};
+
+            insert jobPostToInsert;
+
             JobApplication__c jobApp = new JobApplication__c(
                 Account__c = acc.Id,
                 Name = 'I\'m thinking this should be an Autonumber now...',
