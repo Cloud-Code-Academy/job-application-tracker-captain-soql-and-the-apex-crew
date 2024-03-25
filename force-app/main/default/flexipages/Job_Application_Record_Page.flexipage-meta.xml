@@ -82,16 +82,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Salary__c</fieldItem>
-                <identifier>RecordSalary_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.Rating__c</fieldItem>
                 <identifier>RecordRating_cField</identifier>
             </fieldInstance>
@@ -120,6 +110,36 @@
             <fieldInstance>
                 <fieldItem>Record.Contact__r.Phone</fieldItem>
                 <identifier>RecordContact_rPhoneField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Salary__c</fieldItem>
+                <identifier>RecordSalary_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Estimated_Yearly_Pay__c</fieldItem>
+                <identifier>RecordEstimated_Yearly_Pay_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Estimated_Monthly_Pay__c</fieldItem>
+                <identifier>RecordEstimated_Monthly_Pay_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-218eeaa4-57ef-45dc-969e-4e558c2d6454</name>
@@ -184,6 +204,36 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.Description__c</fieldItem>
                 <identifier>RecordDescription_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Medicare__c</fieldItem>
+                <identifier>RecordMedicare_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Social_Security_Tax__c</fieldItem>
+                <identifier>RecordSocial_Security_Tax_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Estimated_Federal_Tax__c</fieldItem>
+                <identifier>RecordEstimated_Federal_Tax__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-a5ba53ca-22d1-42c8-8635-ea0b03efd455</name>
