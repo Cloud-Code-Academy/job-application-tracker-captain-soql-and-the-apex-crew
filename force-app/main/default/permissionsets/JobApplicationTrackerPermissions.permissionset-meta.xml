@@ -136,6 +136,61 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>JobPosting__c.GoToPosting__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobPosting__c.JooblePostingId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobPosting__c.Link__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobPosting__c.Location__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobPosting__c.Salary__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobPosting__c.Snippet__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobPosting__c.Source__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobPosting__c.Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobPosting__c.Updated__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobSearchCriteria__c.IsActive__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JobSearchCriteria__c.LabelTrig__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>JobApplication__c.URL__c</field>
         <readable>true</readable>
@@ -217,6 +272,15 @@
         <object>JobPosting__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>JobSearchCriteria__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <recordTypeVisibilities>
         <recordType>Event.Default</recordType>
         <visible>true</visible>
@@ -235,6 +299,10 @@
     </tabSettings>
     <tabSettings>
         <tab>JobPosting__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>JobSearchCriteria__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
 </PermissionSet>

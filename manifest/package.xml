@@ -32,5 +32,8 @@
         <members>*</members>
         <name>StaticResource</name>
     </types>
+    <types>
+        <members>*</members>
+        <name>CustomMetadata</name>
     <version>58.0</version>
 </Package>
