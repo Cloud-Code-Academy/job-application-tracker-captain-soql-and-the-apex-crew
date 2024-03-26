@@ -255,6 +255,13 @@ public with sharing class JobApplicationTriggerHandler_Test {
             Assert.areEqual(34800,  updatedJobApp.Estimated_Federal_Tax__c, 'Monthly Pay should equal 34800');
         }
     }
+    @isTest
+    private static void testPopulateApplicationFromPosting(){
+        JobApplication__c jobApp = [SELECT FIELDS(ALL) FROM JobApplication__c WHERE CompanyRef__r.Name = 'Mars'];
+        Assert.areEqual('Repair Technician', jobApp.Position__c);
+        Assert.areEqual('Habitable Zone, MR', jobApp.Location__c);
+        //Assert.areEqual(expected, actual);
+    }
     @TestSetup
     static void makeData(){
         Account acc = new Account(
@@ -263,7 +270,14 @@ public with sharing class JobApplicationTriggerHandler_Test {
         insert acc;
         JobPosting__c jobPost = new JobPosting__c(
             CompanyRef__c = acc.Id,
-            Name = 'Repair Technician'
+            Name = 'Repair Technician',
+            JooblePostingId__c = '5524155181653306098',
+            Location__c = 'Habitable Zone, MR',
+            Snippet__c = 'In this job you will be sent to Mars and need to repair ~~REDACTED~~',
+            Salary__c = '500 martian dollars',
+            Source__c = 'Mars Job Board',
+            Type__c = ' A Job',
+            Updated__c = datetime.newInstance(3101, 6, 25)
         );
         insert jobPost;
         JobApplication__c jobApp = new JobApplication__c(
