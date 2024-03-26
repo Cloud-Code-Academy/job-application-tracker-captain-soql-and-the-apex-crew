@@ -185,20 +185,35 @@ public with sharing class JobApplicationTriggerHandler {
         jobApp.Estimated_Federal_Tax__c = totalFederalTax;
     }
 
-    private static void updateJobApplicationWithJopPostInfo(List<JobApplication__c> triggerDotNew) {
+    public static void updateJobApplicationWithJopPostInfo(List<JobApplication__c> triggerDotNew) {
+        Map<String, JobApplication__c> jobPostingIdToApplicationMap = new Map<String, JobApplication__c>();
         for(jobApplication__c jobApplication : triggerDotNew) {
-            if(jobApplication.Job_Posting__c != null) {
-                populateApplicationFromPosting(jobApplication);
+            if(jobApplication.JobPostingRef__c != null) {
+                jobPostingIdToApplicationMap.put(jobApplication.JobPostingRef__c, jobApplication);
             }
         }
+        populateApplicationFromPosting(jobPostingIdToApplicationMap);
     }
     
-    private static void populateApplicationFromPosting(JobApplication__c jobApplication) {
-        Job_Posting__c jobPosting = [SELECT Id, Job_Title__c, Job_Description__c, Job_Location__c, Job_Type__c, Job_Salary__c FROM Job_Posting__c WHERE Id = :jobApplication.Job_Posting__c];
-        jobApplication.Job_Title__c = jobPosting.Job_Title__c;
-        jobApplication.Job_Description__c = jobPosting.Job_Description__c;
-        jobApplication.Job_Location__c = jobPosting.Job_Location__c;
-        jobApplication.Job_Type__c = jobPosting.Job_Type__c;
-        jobApplication.Salary__c = jobPosting.Job_Salary__c;
+    private static void populateApplicationFromPosting( Map<String, JobApplication__c> jobPostingIdToApplicationMap) {
+        Map<Id, JobPosting__c> jobPostingIdToPostingMap = new Map<Id, JobPosting__c> ( [SELECT Id, CompanyRef__c, Name, Salary__c, Location__c FROM JobPosting__c WHERE Id IN :jobPostingIdToApplicationMap.keySet()]);
+        Double salaryConvert;
+        for(JobApplication__c jobapp : jobPostingIdToApplicationMap.values()) {
+            if (jobPostingIdToPostingMap.containsKey(jobapp.JobPostingRef__c)) {
+                JobPosting__c relatedJobPosting = jobPostingIdToPostingMap.get(jobapp.JobPostingRef__c);
+                jobapp.Office_Location__c = relatedJobPosting.Location__c;
+                jobapp.Account__c = relatedJobPosting.CompanyRef__c;
+                jobapp.Position__c = relatedJobPosting.Name;
+                jobapp.Follow_up_date__c = Date.today() + 1;
+                if (relatedJobPosting?.Salary__c != null) {
+                    try {
+                        salaryConvert = Decimal.valueOf(relatedJobPosting.Salary__c);
+                        jobapp.Salary__c = salaryConvert;
+                    } catch (Exception e) {
+                        System.debug('Invalid Salary__c value: ' + relatedJobPosting.Salary__c);
+                    }
+                }
+            }
+        }
     }
 }
