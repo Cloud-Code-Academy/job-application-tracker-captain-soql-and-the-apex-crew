@@ -184,4 +184,21 @@ public with sharing class JobApplicationTriggerHandler {
         jobApp.Social_Security_Tax__c = totalSocialSecurity;
         jobApp.Estimated_Federal_Tax__c = totalFederalTax;
     }
+
+    private static void updateJobApplicationWithJopPostInfo(List<JobApplication__c> triggerDotNew) {
+        for(jobApplication__c jobApplication : triggerDotNew) {
+            if(jobApplication.Job_Posting__c != null) {
+                populateApplicationFromPosting(jobApplication);
+            }
+        }
+    }
+    
+    private static void populateApplicationFromPosting(JobApplication__c jobApplication) {
+        Job_Posting__c jobPosting = [SELECT Id, Job_Title__c, Job_Description__c, Job_Location__c, Job_Type__c, Job_Salary__c FROM Job_Posting__c WHERE Id = :jobApplication.Job_Posting__c];
+        jobApplication.Job_Title__c = jobPosting.Job_Title__c;
+        jobApplication.Job_Description__c = jobPosting.Job_Description__c;
+        jobApplication.Job_Location__c = jobPosting.Job_Location__c;
+        jobApplication.Job_Type__c = jobPosting.Job_Type__c;
+        jobApplication.Salary__c = jobPosting.Job_Salary__c;
+    }
 }
