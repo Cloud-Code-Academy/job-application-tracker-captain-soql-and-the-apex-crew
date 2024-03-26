@@ -210,7 +210,7 @@ public with sharing class JobApplicationTriggerHandler {
                         salaryConvert = Decimal.valueOf(relatedJobPosting.Salary__c);
                         jobapp.Salary__c = salaryConvert;
                     } catch (Exception e) {
-                        System.debug('Invalid Salary__c value: ' + relatedJobPosting.Salary__c);
+                        System.debug('No Salary Info: ' + e.getMessage());
                     }
                 }
             }
