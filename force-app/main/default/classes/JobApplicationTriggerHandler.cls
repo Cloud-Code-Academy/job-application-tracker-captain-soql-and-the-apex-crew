@@ -201,10 +201,10 @@ public with sharing class JobApplicationTriggerHandler {
         for(JobApplication__c jobapp : jobPostingIdToApplicationMap.values()) {
             if (jobPostingIdToPostingMap.containsKey(jobapp.JobPostingRef__c)) {
                 JobPosting__c relatedJobPosting = jobPostingIdToPostingMap.get(jobapp.JobPostingRef__c);
-                jobapp.Office_Location__c = relatedJobPosting.Location__c.left(63);
+                jobapp.Office_Location__c = relatedJobPosting?.Location__c?.left(63);
                 jobapp.Account__c = relatedJobPosting.CompanyRef__c;
-                jobapp.Position__c = relatedJobPosting.Name;
-                jobapp.Description__c = relatedJobPosting.Snippet__c;
+                jobapp.Position__c = relatedJobPosting?.Name;
+                jobapp.Description__c = relatedJobPosting?.Snippet__c;
                 jobapp.Follow_up_date__c = Date.today() + 1;
                 if (relatedJobPosting?.Salary__c != null) {
                     try {

@@ -295,6 +295,30 @@ public with sharing class JobApplicationTriggerHandler_Test {
         //The jobApp description field can hold more characters than the JobPost snippet so this shouldn't be a problem. 
         Assert.areEqual(generateLoremIpsum(), jobAppConfirmed.Description__c, 'Expected extracted description');
     }
+    @isTest
+    private static void testInsertWithMinimalData() {
+        Account acc = new Account(
+            Name = 'Mars'
+        );
+        insert acc;
+        JobPosting__c jobPost = new JobPosting__c(
+            CompanyRef__c = acc.Id,
+            Name = 'Repair Technician'
+        );
+        insert jobPost;
+        JobApplication__c jobApp = new JobApplication__c(
+            Account__c = acc.Id,
+            Name = 'I\'m thinking this should be an Autonumber now...',
+            JobPostingRef__c = jobPost.Id
+        );
+        insert jobApp;
+        Event newEvent = new Event(
+            StartDateTime = Datetime.newInstance(2124,6,19,12,30,2),
+            EndDateTime = Datetime.newInstance(2124,6,19,13,00,2)
+        );
+        insert newEvent;
+        Assert.areEqual(2, [Select Id FROM JobApplication__c].size(),'Expected two to have been inserted.');
+    }
     @TestSetup
     static void makeData(){
         Account acc = new Account(
