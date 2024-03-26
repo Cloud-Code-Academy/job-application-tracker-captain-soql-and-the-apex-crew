@@ -29,6 +29,7 @@
     <tabs>JobPosting__c</tabs>
     <tabs>standard-Task</tabs>
     <tabs>standard-Event</tabs>
+    <tabs>JobSearchCriteria__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>Application_Tracker_UtilityBar</utilityBar>
 </CustomApplication>
