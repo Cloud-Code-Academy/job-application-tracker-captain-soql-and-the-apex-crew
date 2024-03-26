@@ -2,7 +2,8 @@ trigger JobApplicationTrigger on JobApplication__c (before insert, after insert,
     switch on trigger.operationType {
         when BEFORE_INSERT{
             JobApplicationTriggerHandler.assignPrimaryContactOnInsert(trigger.new);
-            JobApplicationTriggerHandler.estimateTakeHomePay(trigger.new);  
+            JobApplicationTriggerHandler.estimateTakeHomePay(trigger.new);
+            JobApplicationTriggerHandler.updateJobApplicationWithJopPostInfo(trigger.new);
         }
         when AFTER_INSERT{
             JobApplicationTriggerHandler.createTaskBasedOnStatus(trigger.new);
