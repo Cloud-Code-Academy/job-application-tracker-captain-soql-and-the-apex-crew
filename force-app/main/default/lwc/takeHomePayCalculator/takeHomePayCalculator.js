@@ -1,10 +1,5 @@
-/**
- * @description       : 
- * @author            : @Fritz
- * @group             : Cohort2
- * @last modified on  : 03-11-2024
- * @last modified by  : @Fritz
-**/
+
+
 import { LightningElement } from 'lwc';
 
 // Tax rates
