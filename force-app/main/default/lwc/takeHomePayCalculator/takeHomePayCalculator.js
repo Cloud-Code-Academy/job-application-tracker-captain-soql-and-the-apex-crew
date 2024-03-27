@@ -1,5 +1,5 @@
 
-**/
+
 import { LightningElement } from 'lwc';
 
 // Tax rates
