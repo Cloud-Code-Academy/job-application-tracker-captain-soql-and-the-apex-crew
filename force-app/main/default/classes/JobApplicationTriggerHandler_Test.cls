@@ -260,7 +260,7 @@ public with sharing class JobApplicationTriggerHandler_Test {
         JobApplication__c jobApp = [SELECT Position__c,Office_Location__c, Salary__c,Description__c  FROM JobApplication__c WHERE Account__r.Name = 'Mars' LIMIT 1][0];
         Assert.areEqual('Repair Technician', jobApp.Position__c, 'Expected Matching Titles.');
         Assert.areEqual('Habitable Zone, MR', jobApp.Office_Location__c, 'Expected Matching Locations.');
-        Assert.areEqual(500, jobApp.Salary__c, 'Expected extracted salary.');
+        Assert.areEqual(100000, jobApp.Salary__c, 'Expected extracted salary.');
         Assert.areEqual('In this job you will be sent to Mars and need to repair ~~REDACTED~~', jobApp.Description__c, 'Expected extracted description');
     }
     @isTest
@@ -289,11 +289,35 @@ public with sharing class JobApplicationTriggerHandler_Test {
         JobApplication__c jobAppConfirmed = [SELECT Position__c,Office_Location__c, Salary__c,Description__c  FROM JobApplication__c WHERE Account__r.Name = 'Infinity Books' LIMIT 1][0];
         Assert.areEqual('Quantum Literaturist', jobAppConfirmed.Position__c, 'Expected Matching Titles.');
         //Suggested handling of data that can not be extracted from information given.
-        Assert.areEqual( null, jobAppConfirmed.Office_Location__c, 'Expected Matching Locations.');
+        Assert.istrue(jobAppConfirmed.Office_Location__c.startsWith('Infinity Books'), 'Expected Matching Locations.');
         //Suggested handling of data that can not be extracted from information given.
         Assert.areEqual( null , jobAppConfirmed.Salary__c, 'Expected extracted salary.');
         //The jobApp description field can hold more characters than the JobPost snippet so this shouldn't be a problem. 
         Assert.areEqual(generateLoremIpsum(), jobAppConfirmed.Description__c, 'Expected extracted description');
+    }
+    @isTest
+    private static void testInsertWithMinimalData() {
+        Account acc = new Account(
+            Name = 'Mars'
+        );
+        insert acc;
+        JobPosting__c jobPost = new JobPosting__c(
+            CompanyRef__c = acc.Id,
+            Name = 'Repair Technician'
+        );
+        insert jobPost;
+        JobApplication__c jobApp = new JobApplication__c(
+            Account__c = acc.Id,
+            Name = 'I\'m thinking this should be an Autonumber now...',
+            JobPostingRef__c = jobPost.Id
+        );
+        insert jobApp;
+        Event newEvent = new Event(
+            StartDateTime = Datetime.newInstance(2124,6,19,12,30,2),
+            EndDateTime = Datetime.newInstance(2124,6,19,13,00,2)
+        );
+        insert newEvent;
+        Assert.areEqual(2, [Select Id FROM JobApplication__c].size(),'Expected two to have been inserted.');
     }
     @TestSetup
     static void makeData(){
@@ -307,7 +331,7 @@ public with sharing class JobApplicationTriggerHandler_Test {
             JooblePostingId__c = '5524155181653306098',
             Location__c = 'Habitable Zone, MR',
             Snippet__c = 'In this job you will be sent to Mars and need to repair ~~REDACTED~~',
-            Salary__c = '500 martian dollars',
+            Salary__c = '100000 martian dollars',
             Source__c = 'Mars Job Board',
             Type__c = ' A Job',
             Updated__c = datetime.newInstance(3101, 6, 25)
@@ -316,8 +340,8 @@ public with sharing class JobApplicationTriggerHandler_Test {
         JobApplication__c jobApp = new JobApplication__c(
             Account__c = acc.Id,
             Name = 'I\'m thinking this should be an Autonumber now...',
-            JobPostingRef__c = jobPost.Id,
-            Salary__c = 100000
+            JobPostingRef__c = jobPost.Id
+            //Salary__c = 100000
         );
         insert jobApp;
         Contact contact = new Contact(LastName = 'Watney');
