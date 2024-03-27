@@ -184,4 +184,38 @@ public with sharing class JobApplicationTriggerHandler {
         jobApp.Social_Security_Tax__c = totalSocialSecurity;
         jobApp.Estimated_Federal_Tax__c = totalFederalTax;
     }
+
+    public static void updateJobApplicationWithJopPostInfo(List<JobApplication__c> triggerDotNew) {
+        Map<String, JobApplication__c> jobPostingIdToApplicationMap = new Map<String, JobApplication__c>();
+        for(jobApplication__c jobApplication : triggerDotNew) {
+            if(jobApplication.JobPostingRef__c != null) {
+                jobPostingIdToApplicationMap.put(jobApplication.JobPostingRef__c, jobApplication);
+            }
+        }
+        populateApplicationFromPosting(jobPostingIdToApplicationMap);
+    }
+    
+    private static void populateApplicationFromPosting( Map<String, JobApplication__c> jobPostingIdToApplicationMap) {
+        Map<Id, JobPosting__c> jobPostingIdToPostingMap = new Map<Id, JobPosting__c> ( [SELECT Id, Snippet__c, CompanyRef__c, Name, Salary__c, Location__c FROM JobPosting__c WHERE Id IN :jobPostingIdToApplicationMap.keySet()]);
+        Double salaryConvert;
+        for(JobApplication__c jobapp : jobPostingIdToApplicationMap.values()) {
+            if (jobPostingIdToPostingMap.containsKey(jobapp.JobPostingRef__c)) {
+                JobPosting__c relatedJobPosting = jobPostingIdToPostingMap.get(jobapp.JobPostingRef__c);
+                jobapp.Office_Location__c = relatedJobPosting?.Location__c?.left(63);
+                jobapp.Account__c = relatedJobPosting.CompanyRef__c;
+                jobapp.Position__c = relatedJobPosting?.Name;
+                jobapp.Description__c = relatedJobPosting?.Snippet__c;
+                jobapp.Follow_up_date__c = Date.today() + 1;
+                if (relatedJobPosting?.Salary__c != null) {
+                    try {
+                        String myReplaceString = relatedJobPosting.Salary__c.replaceAll('[^.\\d]','');
+                        salaryConvert = Decimal.valueOf(myReplaceString);
+                        jobapp.Salary__c = salaryConvert;
+                    } catch (Exception e) {
+                        System.debug('No Salary Info: ' + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
 }
