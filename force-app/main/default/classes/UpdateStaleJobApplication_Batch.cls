@@ -4,7 +4,7 @@ public class UpdateStaleJobApplication_Batch implements Database.Batchable<sObje
         String query = 'SELECT Id, Status__c, CreatedById ';
         query += 'FROM JobApplication__c ';
         query += 'WHERE Status__c != \'Closed\' ';
-        query += 'AND Follow_up_date__c > LAST_N_DAYS:30';
+        query += 'AND Follow_up_date__c < LAST_N_DAYS:30';
         return Database.getQueryLocator(query);
     }
     

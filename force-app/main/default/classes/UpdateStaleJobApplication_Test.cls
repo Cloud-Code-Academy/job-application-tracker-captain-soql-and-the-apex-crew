@@ -7,7 +7,7 @@ public with sharing class UpdateStaleJobApplication_Test {
         Id batchId = Database.executeBatch(batch);
         Test.stopTest();
 
-        List<JobApplication__c> updatedJobApp = [SELECT Id, Status__c FROM JobApplication__c WHERE Follow_Up_Date__c > LAST_N_DAYS:30];
+        List<JobApplication__c> updatedJobApp = [SELECT Id, Status__c FROM JobApplication__c WHERE Follow_Up_Date__c < LAST_N_DAYS:30];
         List<Task> createdTask = [SELECT Id, Subject FROM Task WHERE Subject = 'Closed By Automated Process'];
 
         for(JobApplication__c jobApp : updatedJobApp){
