@@ -52,5 +52,11 @@ public with sharing class UpdateStaleJobApplication_Test {
             Follow_Up_Date__c = todayMinus45
         );
         insert jobApp;
+        List<JobApplication__c> jobAppToUpdate = new List<JobApplication__c>();
+        for(JobApplication__c jApp: [SELECT Id, Follow_Up_Date__c,Name FROM JobApplication__c]){
+            jobApp.Follow_up_date__c = todayMinus45;
+            jobAppToUpdate.add(jApp);
+        }
+        update jobAppToUpdate;
     }
 }
