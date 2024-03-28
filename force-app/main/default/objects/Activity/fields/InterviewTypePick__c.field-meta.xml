@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>InterviewTypePick__c</fullName>
+    <description>Used for categorizing the interview process for better organization and reporting.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Select the type of interview being conducted for this event (e.g., phone, in-person, video).</inlineHelpText>
+    <label>Interview Type</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Phone</fullName>
+                <default>false</default>
+                <label>Phone</label>
+            </value>
+            <value>
+                <fullName>Video</fullName>
+                <default>false</default>
+                <label>Video</label>
+            </value>
+            <value>
+                <fullName>In-Person</fullName>
+                <default>false</default>
+                <label>In-Person</label>
+            </value>
+            <value>
+                <fullName>Panel</fullName>
+                <default>false</default>
+                <label>Panel</label>
+            </value>
+            <value>
+                <fullName>Group</fullName>
+                <default>false</default>
+                <label>Group</label>
+            </value>
+            <value>
+                <fullName>Technical</fullName>
+                <default>false</default>
+                <label>Technical</label>
+            </value>
+            <value>
+                <fullName>Behavioral</fullName>
+                <default>false</default>
+                <label>Behavioral</label>
+            </value>
+            <value>
+                <fullName>Case</fullName>
+                <default>false</default>
+                <label>Case</label>
+            </value>
+            <value>
+                <fullName>Screening</fullName>
+                <default>false</default>
+                <label>Screening</label>
+            </value>
+            <value>
+                <fullName>Second Round</fullName>
+                <default>false</default>
+                <label>Second Round</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
